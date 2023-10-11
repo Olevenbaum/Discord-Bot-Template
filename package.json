@@ -29,6 +29,7 @@
         "url": "https://github.com/Olevenbaum/Discord-Bot-Template"
     },
     "scripts": {
+        "resetApplicationCommands": "node ./management/resetApplicationCommands.js",
         "start": "node ."
     },
     "version": "1.0"
