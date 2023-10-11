@@ -1,0 +1,35 @@
+{
+    "author": {
+        "email": "olevenbaum@gmx.de",
+        "name": "Ole Deifuß"
+    },
+    "bugs": {
+        "email": "olevenbaum@gmx.de",
+        "url": "https://github.com/Olevenbaum/Discord-Bot-Template/issues"
+    },
+    "description": "Discord bot template for discord.js v14",
+    "dependencies": {
+        "discord.js": "^14.13.0",
+        "json": "^11.0.0",
+        "npm": "^10.2.0"
+    },
+    "homepage": "https://github.com/Olevenbaum/Discord-Bot-Template",
+    "icon": "./resources/images/profilepicture.png",
+    "keywords": [
+        "bot",
+        "discord",
+        "javascript",
+        "template"
+    ],
+    "license": "BSD-3-Clause",
+    "main": "application/application.js",
+    "name": "discord-bot-template",
+    "repository": {
+        "type": "github",
+        "url": "https://github.com/Olevenbaum/Discord-Bot-Template"
+    },
+    "scripts": {
+        "start": "node ."
+    },
+    "version": "1.0"
+}
