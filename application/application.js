@@ -6,7 +6,43 @@ const path = require("node:path");
 const { Client, Collection, GatewayIntentBits } = require("discord.js");
 
 // Importing configuration data
-const { application } = require("../configuration.json");
+const { applications } = require("../configuration.json");
+
+// Defining prototype function for asynchronous find for array
+Array.prototype.asynchronousFind = async function (predicate, thisArg = null) {
+    // Binding second argument to callback function
+    const boundPredicate = predicate.bind(thisArg);
+
+    // Iteracting over keys of array
+    for (const key of this.keys()) {
+        // Checking if callback function returns true for element
+        if (await boundPredicate(this.at(key), key, this)) {
+            // Return element
+            return this.at(key);
+        }
+    }
+
+    // Return undefined
+    return undefined;
+};
+
+// Defining prototype function for rotating arrays
+Array.prototype.rotate = function (counter = 1, reverse = false) {
+    // Reducing counter
+    counter %= this.length;
+
+    // Checking if direction is reversed
+    if (reverse) {
+        // Rotating array clockwise
+        this.push(...this.splice(0, this.length - counter));
+    } else {
+        // Rotating array counterclockwise
+        this.unshift(...this.splice(counter, this.length));
+    }
+
+    // Returning array
+    return this;
+};
 
 // Creating new client
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -110,5 +146,33 @@ eventTypeFiles.forEach((eventTypeFile) => {
 // Printin information
 console.info("[INFORMATION]:", "Logging in bot application at Discord...");
 
-// Logging in bot application at Discord
-client.login(application.token);
+// Searching for argument of process
+const tokenArgument = process.argv.findIndex((argument) =>
+    argument.startsWith("-application")
+);
+
+// Defining tokens array
+const tokens = applications.map((application) => application.token);
+
+// Checking if argument for different token was provided
+if (tokenArgument && !isNaN(process.argv.at(tokenArgument + 1))) {
+    tokens.rotate(process.argv.at(tokenArgument + 1));
+}
+
+// Iterating over application tokens
+tokens.asynchronousFind(async (token) => {
+    // Checking if token could be valid
+    if (token && typeof token === "string" && token.length > 0) {
+        // Trying to login application
+        return await client.login(token).catch((error) =>
+            // Printing error
+            console.error("[ERROR]:", error)
+        );
+    } else {
+        // Printing warning
+        console.warn("[WARNING]:", "Token does not meet the requirements");
+
+        // Returning false
+        return false;
+    }
+});
