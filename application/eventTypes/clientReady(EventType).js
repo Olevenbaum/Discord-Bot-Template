@@ -8,6 +8,9 @@ module.exports = {
 
     // Handling event
     async execute(client) {
+        // Updating registered application commands
+        require("../updateApplicationCommands.js")(client);
+
         // Printing information
         console.info(
             "[INFORMATION]:",
