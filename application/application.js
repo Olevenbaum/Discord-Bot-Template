@@ -9,24 +9,34 @@ const { Client, Collection, GatewayIntentBits } = require("discord.js");
 const { applications } = require("../configuration.json");
 
 // Defining prototype function for asynchronous find for array
-Array.prototype.asynchronousFind = async function (predicate, thisArg = null) {
+/**
+ * @param {Function} predicate
+ * @param {Array} array
+ * @returns {Boolean | undefined}
+ */
+Array.prototype.asynchronousFind = async function (predicate, array = null) {
     // Binding second argument to callback function
-    const boundPredicate = predicate.bind(thisArg);
+    const boundPredicate = predicate.bind(array);
 
-    // Iteracting over keys of array
+    // Iterating over keys of array
     for (const key of this.keys()) {
         // Checking if callback function returns true for element
         if (await boundPredicate(this.at(key), key, this)) {
-            // Return element
+            // Returning element
             return this.at(key);
         }
     }
 
-    // Return undefined
+    // Returning undefined
     return undefined;
 };
 
 // Defining prototype function for rotating arrays
+/**
+ * @param {Number} counter
+ * @param {Boolean} reverse
+ * @returns {Array}
+ */
 Array.prototype.rotate = function (counter = 1, reverse = false) {
     // Reducing counter
     counter %= this.length;
@@ -93,7 +103,7 @@ applicationCommandFiles.forEach((applicationCommandFile) => {
         // Printing information
         console.info(
             "[INFORMATION]:",
-            `The applicaion command file for the application command '${applicationCommand.name}' is incomplete and thereby was not added`
+            `The application command file for the application command '${applicationCommand.name}' is incomplete and thereby was not added`
         );
     }
 });
@@ -156,6 +166,7 @@ const tokens = applications.map((application) => application.token);
 
 // Checking if argument for different token was provided
 if (tokenArgument && !isNaN(process.argv.at(tokenArgument + 1))) {
+    // Rotate array
     tokens.rotate(process.argv.at(tokenArgument + 1));
 }
 
@@ -164,10 +175,16 @@ tokens.asynchronousFind(async (token) => {
     // Checking if token could be valid
     if (token && typeof token === "string" && token.length > 0) {
         // Trying to login application
-        return await client.login(token).catch((error) =>
-            // Printing error
-            console.error("[ERROR]:", error)
-        );
+        return await client.login(token).catch((error) => {
+            // Checking if error is caused by wrong token
+            if (error.code === "TokenInvalid") {
+                // Printing warning
+                console.warn("[WARNING]:", "Token was not accepted by Discord");
+            } else {
+                // Printing error
+                console.error("[ERROR]:", error);
+            }
+        });
     } else {
         // Printing warning
         console.warn("[WARNING]:", "Token does not meet the requirements");
