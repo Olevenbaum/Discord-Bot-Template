@@ -11,6 +11,9 @@ module.exports = {
      * @param {Client} client
      */
     async execute(client) {
+        // Updating registered application commands
+        require("../updateApplicationCommands.js")(client);
+
         // Printing information
         console.info(
             "[INFORMATION]:",
