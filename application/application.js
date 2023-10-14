@@ -24,16 +24,18 @@ const applicationCommandsPath = path.join(
 );
 
 // Reading application command filenames
-const applicationCommandFiles = fs
+const applicationCommandFileNames = fs
     .readdirSync(applicationCommandsPath)
-    .filter((applicationCommandFile) => applicationCommandFile.endsWith(".js"));
+    .filter((applicationCommandFileName) =>
+        applicationCommandFileName.endsWith(".js")
+    );
 
 // Iterate over all application command files
-applicationCommandFiles.forEach((applicationCommandFile) => {
+applicationCommandFileNames.forEach((applicationCommandFileName) => {
     // Reading application command
     const applicationCommand = require(path.join(
         applicationCommandsPath,
-        applicationCommandFile
+        applicationCommandFileName
     ));
 
     // Checking required parts of application command
@@ -69,14 +71,14 @@ console.info("[INFORMATION]:", "Creating event listeners...");
 const eventTypesPath = path.join(__dirname, "./eventTypes");
 
 // Reading event filenames
-const eventTypeFiles = fs
+const eventTypeFileNames = fs
     .readdirSync(eventTypesPath)
-    .filter((eventTypeFile) => eventTypeFile.endsWith(".js"));
+    .filter((eventTypeFileName) => eventTypeFileName.endsWith(".js"));
 
 // Iterate over event files
-eventTypeFiles.forEach((eventTypeFile) => {
+eventTypeFileNames.forEach((eventTypeFileName) => {
     // Reading event
-    const eventType = require(path.join(eventTypesPath, eventTypeFile));
+    const eventType = require(path.join(eventTypesPath, eventTypeFileName));
 
     // Checking required parts of event
     if ("execute" in eventType) {

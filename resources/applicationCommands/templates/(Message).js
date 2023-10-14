@@ -2,6 +2,7 @@
 const {
     ApplicationCommandType,
     ContextMenuCommandBuilder,
+    MessageContextMenuCommandInteraction,
 } = require("discord.js");
 
 module.exports = {
@@ -12,9 +13,9 @@ module.exports = {
         .setType(this.type),
     type: ApplicationCommandType.Message,
 
-    // Handling command autocomplete
-    async autocomplete(interaction) {},
-
     // Handling command reponse
+    /**
+     * @param {MessageContextMenuCommandInteraction} interaction
+     */
     async execute(interaction) {},
 };

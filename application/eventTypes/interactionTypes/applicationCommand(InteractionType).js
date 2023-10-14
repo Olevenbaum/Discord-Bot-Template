@@ -3,7 +3,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 // Importing classes and methods
-const { Collection, InteractionType } = require("discord.js");
+const { Collection, Interaction, InteractionType } = require("discord.js");
 
 // Creating application commands types collection
 const applicationCommandTypes = new Collection();
@@ -15,18 +15,18 @@ const applicationCommandTypesPath = path.join(
 );
 
 // Reading application command type filenames
-const applicationCommandTypeFiles = fs
+const applicationCommandTypeFileNames = fs
     .readdirSync(applicationCommandTypesPath)
-    .filter((applicationCommandTypeFile) =>
-        applicationCommandTypeFile.endsWith(".js")
+    .filter((applicationCommandTypeFileName) =>
+        applicationCommandTypeFileName.endsWith(".js")
     );
 
 // Iterating over application command types
-applicationCommandTypeFiles.forEach((applicationCommandTypeFile) => {
+applicationCommandTypeFileNames.forEach((applicationCommandTypeFileName) => {
     // Reading application command type
     const applicationCommandType = require(path.join(
         applicationCommandTypesPath,
-        applicationCommandTypeFile
+        applicationCommandTypeFileName
     ));
 
     // Cecking required parts of application command type
@@ -40,7 +40,7 @@ applicationCommandTypeFiles.forEach((applicationCommandTypeFile) => {
         // Printing warning
         console.warn(
             "[WARNING]:",
-            `Missing required 'execute' property of application command type '${applicationCommandTypeFile.type}'`
+            `Missing required 'execute' property of application command type '${applicationCommandTypeFileName.type}'`
         );
 
         // Printing information
@@ -56,6 +56,9 @@ module.exports = {
     type: InteractionType.ApplicationCommand,
 
     // Handling interaction
+    /**
+     * @param {Interaction} interaction
+     */
     async execute(interaction) {
         // Searching for application command type
         const applicationCommandType = applicationCommandTypes.get(

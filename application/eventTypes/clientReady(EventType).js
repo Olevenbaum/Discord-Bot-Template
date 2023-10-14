@@ -1,5 +1,5 @@
 // Importing classes and methods
-const { Events } = require("discord.js");
+const { Client, Events } = require("discord.js");
 
 module.exports = {
     // Setting event kind and type
@@ -7,6 +7,9 @@ module.exports = {
     type: Events.ClientReady,
 
     // Handling event
+    /**
+     * @param {Client} client
+     */
     async execute(client) {
         // Printing information
         console.info(

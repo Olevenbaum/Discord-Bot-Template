@@ -1,5 +1,5 @@
 // Importing classes and methods
-const { Events } = require("discord.js");
+const { Events, Interaction } = require("discord.js");
 
 module.exports = {
     // Defining event kind and type
@@ -7,5 +7,8 @@ module.exports = {
     type: Events,
 
     // Handling event
-    execute() {},
+    /**
+     * @param {Interaction} interaction
+     */
+    execute(interaction) {},
 };

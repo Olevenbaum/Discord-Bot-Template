@@ -18,17 +18,19 @@ const applicationCommandsPath = path.join(
 );
 
 // Reading application command filenames
-const applicationCommandFiles = fs
+const applicationCommandFileNames = fs
     .readdirSync(applicationCommandsPath)
-    .filter((applicationCommandFile) => applicationCommandFile.endsWith(".js"));
+    .filter((applicationCommandFileName) =>
+        applicationCommandFileName.endsWith(".js")
+    );
 
 // Iteracting over application command files
-applicationCommandFiles.forEach((applicationCommandFile) => {
+applicationCommandFileNames.forEach((applicationCommandFileName) => {
     // Adding application command to its collection
     applicationCommands.push(
         require(path.join(
             applicationCommandsPath,
-            applicationCommandFile
+            applicationCommandFileName
         )).data.toJSON()
     );
 });

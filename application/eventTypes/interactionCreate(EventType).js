@@ -3,7 +3,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 // Importing classes and methods
-const { Events, Collection } = require("discord.js");
+const { Collection, Events, Interaction } = require("discord.js");
 
 // Creating interaction types collection
 const interactionTypes = new Collection();
@@ -12,16 +12,18 @@ const interactionTypes = new Collection();
 const interactionTypesPath = path.join(__dirname, "./interactionTypes");
 
 // Reading interacion type filenames
-const interactionTypeFiles = fs
+const interactionTypeFileNames = fs
     .readdirSync(interactionTypesPath)
-    .filter((interactionTypeFile) => interactionTypeFile.endsWith(".js"));
+    .filter((interactionTypeFileName) =>
+        interactionTypeFileName.endsWith(".js")
+    );
 
 // Iterating over interaction type files
-interactionTypeFiles.forEach((interactionTypeFile) => {
+interactionTypeFileNames.forEach((interactionTypeFileName) => {
     // Reading interaction type
     const interactionType = require(path.join(
         interactionTypesPath,
-        interactionTypeFile
+        interactionTypeFileName
     ));
 
     // Checking required parts of interaction type
@@ -49,6 +51,9 @@ module.exports = {
     type: Events.InteractionCreate,
 
     // Handling event
+    /**
+     * @param {Interaction} interaction
+     */
     async execute(interaction) {
         // Searching interaction type
         const interactionType = interactionTypes.get(interaction.type);

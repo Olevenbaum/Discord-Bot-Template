@@ -1,11 +1,14 @@
 // Importing classes and methods
-const { ApplicationCommandType } = require("discord.js");
+const { ApplicationCommandType, Interaction } = require("discord.js");
 
 module.exports = {
     // Defining application command type
     type: ApplicationCommandType,
 
     // Handling interaction
+    /**
+     * @param {Interaction} interaction
+     */
     async execute(interaction) {
         // Searching for application command
         const applicationCommand = interaction.client.applicationCommands
@@ -28,7 +31,7 @@ module.exports = {
                         // Sending follow up message
                         interaction.followUp({
                             content:
-                                "There was an error while executing this command!",
+                                "There was an error while executing this application command!",
                             ephemeral: true,
                         });
                     }
@@ -36,14 +39,14 @@ module.exports = {
         } else {
             // Replying to interaction
             interaction.reply({
-                content: `The command ${interaction.commandName} could not be found!`,
+                content: `The application command ${interaction.commandName} could not be found!`,
                 ephemeral: true,
             });
 
             // Printing error
             console.error(
                 "[ERROR]:",
-                `No command matching ${interaction.commandName} was found`
+                `No application command matching ${interaction.commandName} was found`
             );
         }
     },

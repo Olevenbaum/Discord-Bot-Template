@@ -1,11 +1,17 @@
 // Importing classes and methods
-const { ApplicationCommandType } = require("discord.js");
+const {
+    ApplicationCommandType,
+    ChatInputCommandInteraction,
+} = require("discord.js");
 
 module.exports = {
-    // Setting application command type
+    // Defining application command type
     type: ApplicationCommandType.ChatInput,
 
     // Handling interaction
+    /**
+     * @param {ChatInputCommandInteraction} interaction
+     */
     async execute(interaction) {
         // Searching for chat input command
         const chatInputCommand = interaction.client.applicationCommands
