@@ -1,14 +1,16 @@
-// Importing classes and methods
-const {
+// Importing types
+import {
+    ApplicationCommand,
     ApplicationCommandOptionType,
     Collection,
     Routes,
-} = require("discord.js");
+} from "discord.js";
+import { SavedApplicationCommand } from "../types";
 
 // Defining function for comparison of registered and saved application command
 const compareApplicationCommands = function (
-    registeredApplicationCommand,
-    savedApplicationCommand
+    registeredApplicationCommand: ApplicationCommand,
+    savedApplicationCommand: SavedApplicationCommand
 ) {
     // Defining default values
     const defaultValues = {

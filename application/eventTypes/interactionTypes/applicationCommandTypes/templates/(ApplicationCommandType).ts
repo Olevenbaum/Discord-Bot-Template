@@ -1,15 +1,22 @@
-// Importing classes and methods
-const { ApplicationCommandType, Interaction } = require("discord.js");
+// Importing types
+import {
+    ApplicationCommandType,
+    ChatInputCommandInteraction,
+    MessageContextMenuCommandInteraction,
+    UserContextMenuCommandInteraction,
+} from "discord.js";
 
 module.exports = {
     // Defining application command type
     type: ApplicationCommandType,
 
     // Handling interaction
-    /**
-     * @param {Interaction} interaction
-     */
-    async execute(interaction) {
+    async execute(
+        interaction:
+            | ChatInputCommandInteraction
+            | MessageContextMenuCommandInteraction
+            | UserContextMenuCommandInteraction
+    ) {
         // Searching for application command
         const applicationCommand = interaction.client.applicationCommands
             .filter(
@@ -22,7 +29,7 @@ module.exports = {
             // Trying to execute application command specific script
             await applicationCommand
                 .execute(interaction)
-                .catch(async (error) => {
+                .catch((error: Error) => {
                     // Printint error
                     console.error("[ERROR]:", error);
 
@@ -30,8 +37,7 @@ module.exports = {
                     if (interaction.replied || interaction.deferred) {
                         // Sending follow up message
                         interaction.followUp({
-                            content:
-                                "There was an error while executing this application command!",
+                            content: `There was an error while executing the application command **${interaction.commandName}**!`,
                             ephemeral: true,
                         });
                     }
@@ -39,7 +45,7 @@ module.exports = {
         } else {
             // Replying to interaction
             interaction.reply({
-                content: `The application command ${interaction.commandName} could not be found!`,
+                content: `The application command **${interaction.commandName}** could not be found!`,
                 ephemeral: true,
             });
 

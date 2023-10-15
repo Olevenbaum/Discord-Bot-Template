@@ -1,22 +1,29 @@
 // Importing modules
-const fs = require("node:fs");
-const path = require("node:path");
+import fs from "node:fs";
+import path from "node:path";
 
-// Importing classes and methods
-const { Client, Collection, GatewayIntentBits } = require("discord.js");
+// Importing types
+import { Client, Collection, GatewayIntentBits } from "discord.js";
+import { SavedApplicationCommand, SavedEventType } from "../types";
 
 // Importing configuration data
-const { applications } = require("../configuration.json");
+import { applications } from "../configuration.json";
 
 // Defining prototype function for asynchronous find for array
-/**
- * @param {Function} predicate
- * @param {Array} array
- * @returns {Boolean | undefined}
- */
-Array.prototype.asynchronousFind = async function (predicate, array = null) {
+Array.prototype.asynchronousFind = async function <Element>(
+    predicate: (
+        element: Element,
+        key: number,
+        array: Element[]
+    ) => Promise<boolean>,
+    thisArg: any = null
+): Promise<Element | undefined> {
     // Binding second argument to callback function
-    const boundPredicate = predicate.bind(array);
+    const boundPredicate: (
+        element: Element,
+        key: number,
+        thisArg: any
+    ) => Promise<boolean> = predicate.bind(thisArg);
 
     // Iterating over keys of array
     for (const key of this.keys()) {
@@ -32,12 +39,10 @@ Array.prototype.asynchronousFind = async function (predicate, array = null) {
 };
 
 // Defining prototype function for rotating arrays
-/**
- * @param {Number} counter
- * @param {Boolean} reverse
- * @returns {Array}
- */
-Array.prototype.rotate = function (counter = 1, reverse = false) {
+Array.prototype.rotate = function <Element>(
+    counter: number = 1,
+    reverse: boolean = false
+): Element[] {
     // Reducing counter
     counter %= this.length;
 
@@ -73,13 +78,13 @@ const applicationCommandsPath = path.join(
 const applicationCommandFileNames = fs
     .readdirSync(applicationCommandsPath)
     .filter((applicationCommandFileName) =>
-        applicationCommandFileName.endsWith(".js")
+        applicationCommandFileName.endsWith(".ts")
     );
 
 // Iterate over all application command files
 applicationCommandFileNames.forEach((applicationCommandFileName) => {
     // Reading application command
-    const applicationCommand = require(path.join(
+    const applicationCommand: SavedApplicationCommand = require(path.join(
         applicationCommandsPath,
         applicationCommandFileName
     ));
@@ -105,7 +110,7 @@ applicationCommandFileNames.forEach((applicationCommandFileName) => {
         // Printing information
         console.info(
             "[INFORMATION]:",
-            `The application command file for the application command '${applicationCommand.name}' is incomplete and thereby was not added`
+            `The application command file for the application command '${applicationCommand.data.name}' is incomplete and thereby was not added`
         );
     }
 });
@@ -124,21 +129,22 @@ const eventTypeFileNames = fs
 // Iterate over event files
 eventTypeFileNames.forEach((eventTypeFileName) => {
     // Reading event
-    const eventType = require(path.join(eventTypesPath, eventTypeFileName));
+    const eventType: SavedEventType = require(path.join(
+        eventTypesPath,
+        eventTypeFileName
+    ));
 
     // Checking required parts of event
     if ("execute" in eventType) {
         // Checking whether event is called once
         if (eventType.once) {
             // Adding once eventlistener
-            client.once(eventType.type, (...arguments) =>
-                eventType.execute(...arguments)
+            client.once(eventType.type, (...args) =>
+                eventType.execute(...args)
             );
         } else {
             // Adding eventlistener
-            client.on(eventType.type, (...arguments) =>
-                eventType.execute(...arguments)
-            );
+            client.on(eventType.type, (...args) => eventType.execute(...args));
         }
     } else {
         // Printing warning
@@ -164,34 +170,45 @@ const tokenArgument = process.argv.findIndex((argument) =>
 );
 
 // Defining tokens array
-const tokens = applications.map((application) => application.token);
+const tokens = applications.map(({ token }) => token);
 
 // Checking if argument for different token was provided
-if (tokenArgument && !isNaN(process.argv.at(tokenArgument + 1))) {
+if (tokenArgument && !isNaN(parseInt(process.argv[tokenArgument + 1]))) {
     // Rotate array
-    tokens.rotate(process.argv.at(tokenArgument + 1));
+    tokens.rotate(parseInt(process.argv[tokenArgument + 1]));
 }
 
 // Iterating over application tokens
 tokens.asynchronousFind(async (token) => {
     // Checking if token could be valid
-    if (token && typeof token === "string" && token.length > 0) {
+    if (token && token.length > 0) {
         // Trying to login application
-        return await client.login(token).catch((error) => {
-            // Checking if error is caused by wrong token
-            if (error.code === "TokenInvalid") {
-                // Printing warning
-                console.warn("[WARNING]:", "Token was not accepted by Discord");
-            } else {
-                // Printing error
-                console.error("[ERROR]:", error);
-            }
-        });
-    } else {
-        // Printing warning
-        console.warn("[WARNING]:", "Token does not meet the requirements");
+        return await client
+            .login(token)
+            .then(() => {
+                // Returning true
+                return true;
+            })
+            .catch((error) => {
+                // Checking if error is caused by wrong token
+                if (error.code === "TokenInvalid") {
+                    // Printing warning
+                    console.warn(
+                        "[WARNING]:",
+                        "Token was not accepted by Discord"
+                    );
+                } else {
+                    // Printing error
+                    console.error("[ERROR]:", error);
+                }
 
-        // Returning false
-        return false;
+                // Returning false
+                return false;
+            });
     }
+    // Printing warning
+    console.warn("[WARNING]:", "Token does not meet the requirements");
+
+    // Returning false
+    return false;
 });

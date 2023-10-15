@@ -1,12 +1,14 @@
 // Importing modules
-const fs = require("node:fs");
-const path = require("node:path");
+import fs from "node:fs";
+import path from "node:path";
 
-// Importing classes and methods
-const { Collection, Events, Interaction } = require("discord.js");
+// Importing types
+import { Collection, Events, Interaction, InteractionType } from "discord.js";
+import { SavedInteractionType } from "../../types";
 
 // Creating interaction types collection
-const interactionTypes = new Collection();
+const interactionTypes: Collection<InteractionType, SavedInteractionType> =
+    new Collection();
 
 // Defining interaction types path
 const interactionTypesPath = path.join(__dirname, "./interactionTypes");
@@ -21,7 +23,7 @@ const interactionTypeFileNames = fs
 // Iterating over interaction type files
 interactionTypeFileNames.forEach((interactionTypeFileName) => {
     // Reading interaction type
-    const interactionType = require(path.join(
+    const interactionType: SavedInteractionType = require(path.join(
         interactionTypesPath,
         interactionTypeFileName
     ));
@@ -40,7 +42,7 @@ interactionTypeFileNames.forEach((interactionTypeFileName) => {
         // Printing information
         console.info(
             "[INFORMATION]:",
-            `The interaction file for the interaction '${interactionType.name}' is incomplete and thereby was not added`
+            `The interaction file for the interaction '${interactionType.type}' is incomplete and thereby was not added`
         );
     }
 });
@@ -51,17 +53,14 @@ module.exports = {
     type: Events.InteractionCreate,
 
     // Handling event
-    /**
-     * @param {Interaction} interaction
-     */
-    async execute(interaction) {
+    async execute(interaction: Interaction) {
         // Searching interaction type
         const interactionType = interactionTypes.get(interaction.type);
 
         // Checking if interaction type was found
         if (interactionType) {
             // Trying to execute interaction type specific script
-            await interactionType.execute(interaction).catch((error) => {
+            await interactionType.execute(interaction).catch((error: Error) => {
                 // Replying to interaction
                 interaction.reply({
                     ephemeral: true,

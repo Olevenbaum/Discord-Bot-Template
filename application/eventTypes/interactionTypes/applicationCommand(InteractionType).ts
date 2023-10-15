@@ -1,12 +1,23 @@
 // Importing modules
-const fs = require("node:fs");
-const path = require("node:path");
+import fs from "node:fs";
+import path from "node:path";
 
-// Importing classes and methods
-const { Collection, Interaction, InteractionType } = require("discord.js");
+// Importing types
+import {
+    ApplicationCommandType,
+    ChatInputCommandInteraction,
+    Collection,
+    InteractionType,
+    MessageContextMenuCommandInteraction,
+    UserContextMenuCommandInteraction,
+} from "discord.js";
+import { SavedApplicationCommandType } from "../../../types";
 
 // Creating application commands types collection
-const applicationCommandTypes = new Collection();
+const applicationCommandTypes: Collection<
+    ApplicationCommandType,
+    SavedApplicationCommandType
+> = new Collection();
 
 // Defining application command types path
 const applicationCommandTypesPath = path.join(
@@ -24,7 +35,7 @@ const applicationCommandTypeFileNames = fs
 // Iterating over application command types
 applicationCommandTypeFileNames.forEach((applicationCommandTypeFileName) => {
     // Reading application command type
-    const applicationCommandType = require(path.join(
+    const applicationCommandType: SavedApplicationCommandType = require(path.join(
         applicationCommandTypesPath,
         applicationCommandTypeFileName
     ));
@@ -40,13 +51,13 @@ applicationCommandTypeFileNames.forEach((applicationCommandTypeFileName) => {
         // Printing warning
         console.warn(
             "[WARNING]:",
-            `Missing required 'execute' property of application command type '${applicationCommandTypeFileName.type}'`
+            `Missing required 'execute' property of application command type '${applicationCommandType.type}'`
         );
 
         // Printing information
         console.info(
             "[INFORMATION]:",
-            `The application command type file for the application command type '${applicationCommandType.name}' is incomplete and thereby was not added`
+            `The application command type file for the application command type '${applicationCommandType.type}' is incomplete and thereby was not added`
         );
     }
 });
@@ -56,10 +67,12 @@ module.exports = {
     type: InteractionType.ApplicationCommand,
 
     // Handling interaction
-    /**
-     * @param {Interaction} interaction
-     */
-    async execute(interaction) {
+    async execute(
+        interaction:
+            | ChatInputCommandInteraction
+            | MessageContextMenuCommandInteraction
+            | UserContextMenuCommandInteraction
+    ) {
         // Searching for application command type
         const applicationCommandType = applicationCommandTypes.get(
             interaction.commandType
@@ -68,10 +81,12 @@ module.exports = {
         // Checking if application command type was found
         if (applicationCommandType) {
             // Trying to execute application command type specific script
-            await applicationCommandType.execute(interaction).catch((error) => {
-                // Printing error
-                console.error("[ERROR]:", error);
-            });
+            await applicationCommandType
+                .execute(interaction)
+                .catch((error: Error) => {
+                    // Printing error
+                    console.error("[ERROR]:", error);
+                });
         } else {
             // Printing error
             console.error(
