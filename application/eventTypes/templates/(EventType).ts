@@ -1,5 +1,6 @@
 // Importing types
-import { Events, Interaction } from "discord.js";
+import { ClientEvents, Events, Interaction } from "discord.js";
+import { SavedEventType } from "../../../types";
 
 module.exports = {
     // Defining event kind and type
@@ -8,4 +9,4 @@ module.exports = {
 
     // Handling event
     execute(interaction: Interaction) {},
-};
+} as SavedEventType;

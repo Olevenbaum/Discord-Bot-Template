@@ -11,7 +11,10 @@ import {
     MessageContextMenuCommandInteraction,
     UserContextMenuCommandInteraction,
 } from "discord.js";
-import { SavedApplicationCommandType } from "../../../types";
+import {
+    SavedApplicationCommandType,
+    SavedInteractionType,
+} from "../../../types";
 
 // Creating application commands types collection
 const applicationCommandTypes: Collection<
@@ -95,4 +98,4 @@ module.exports = {
             );
         }
     },
-};
+} as SavedInteractionType;

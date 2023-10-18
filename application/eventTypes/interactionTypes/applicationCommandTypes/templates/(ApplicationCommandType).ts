@@ -5,6 +5,7 @@ import {
     MessageContextMenuCommandInteraction,
     UserContextMenuCommandInteraction,
 } from "discord.js";
+import { SavedApplicationCommand } from "../../../../../types";
 
 module.exports = {
     // Defining application command type
@@ -56,4 +57,4 @@ module.exports = {
             );
         }
     },
-};
+} as SavedApplicationCommand;

@@ -1,6 +1,7 @@
 // Importing types
 import {
     ApplicationCommandType,
+    AutocompleteInteraction,
     ChatInputCommandInteraction,
     Events,
     Interaction,
@@ -31,6 +32,7 @@ interface SavedApplicationCommand {
 }
 
 interface SavedChatInputCommand extends SavedApplicationCommand {
+    autocomplete(interacion: AutocompleteInteraction): Promise<void>;
     execute(interacion: ChatInputCommandInteraction): Promise<void>;
 }
 

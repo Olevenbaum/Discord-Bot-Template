@@ -1,7 +1,9 @@
 // Importing types
 import {
     ApplicationCommand,
+    ApplicationCommandOption,
     ApplicationCommandOptionType,
+    Client,
     Collection,
     Routes,
 } from "discord.js";
@@ -28,7 +30,7 @@ const compareApplicationCommands = function (
         .sort();
 
     // Overwriting imported version of registered application command
-    registeredApplicationCommand = Object.fromEntries(
+    const owerwrittenRegisteredApplicationCommand = Object.fromEntries(
         commonKeys.map((key) => {
             // Checking for specific keys
             switch (key) {
@@ -62,7 +64,7 @@ const compareApplicationCommands = function (
     );
 
     // Overwriting saved application command
-    savedApplicationCommand = Object.fromEntries(
+    const owerwrittenSavedApplicationCommand = Object.fromEntries(
         commonKeys.map((key) => {
             // Checking for specific keys
             switch (key) {
@@ -99,14 +101,14 @@ const compareApplicationCommands = function (
 
     // Returning comparison
     return (
-        JSON.stringify(registeredApplicationCommand) ===
-        JSON.stringify(savedApplicationCommand)
+        JSON.stringify(owerwrittenRegisteredApplicationCommand) ===
+        JSON.stringify(owerwrittenSavedApplicationCommand)
     );
 };
 
 // Defining function for transforming application command options
 const transformApplicationCommandOptions = function (
-    applicationCommandOptions,
+    applicationCommandOptions: ApplicationCommandOption[],
     registered = false
 ) {
     // Defining default option values
@@ -155,49 +157,70 @@ const transformApplicationCommandOptions = function (
                             // Returning edited entry
                             return [
                                 key,
-                                option[key].map((choice) => {
-                                    // Searching and sorting keys of choice
-                                    const keys = Object.keys(choice).sort();
+                                option[key].map(
+                                    (choice: {
+                                        name: string;
+                                        name_localizations: {
+                                            [key: string]: string;
+                                        };
+                                        value: string | number;
+                                    }) => {
+                                        // Searching and sorting keys of choice
+                                        const keys = Object.keys(choice).sort();
 
-                                    // Returning sorted choices
-                                    return Object.fromEntries(
-                                        keys.map((key) => {
-                                            // Checking for specific key
-                                            switch (key) {
-                                                case "name_localization":
-                                                    // Defining entry
-                                                    const entry = choice[key];
+                                        // Returning sorted choices
+                                        return Object.fromEntries(
+                                            keys.map((key) => {
+                                                // Checking for specific key
+                                                switch (key) {
+                                                    case "name_localization":
+                                                        // Defining entry
+                                                        const entry: {
+                                                            [
+                                                                key: string
+                                                            ]: string;
+                                                        } = choice[key];
 
-                                                    // Searching and sorting keys of entry
-                                                    const keys =
-                                                        Object.keys(
-                                                            entry
-                                                        ).sort();
+                                                        // Searching and sorting keys of entry
+                                                        const keys =
+                                                            Object.keys(
+                                                                entry
+                                                            ).sort();
 
-                                                    // Returning sorted entry
-                                                    return [
-                                                        key,
-                                                        Object.fromEntries(
-                                                            keys.map((key) => [
-                                                                key,
-                                                                entry[key],
-                                                            ])
-                                                        ),
-                                                    ];
+                                                        // Returning sorted entry
+                                                        return [
+                                                            key,
+                                                            Object.fromEntries(
+                                                                keys.map(
+                                                                    (key) => [
+                                                                        key,
+                                                                        entry[
+                                                                            key
+                                                                        ],
+                                                                    ]
+                                                                )
+                                                            ),
+                                                        ];
 
-                                                default:
-                                                    // Returning entry
-                                                    return [key, choice[key]];
-                                            }
-                                        })
-                                    );
-                                }),
+                                                    default:
+                                                        // Returning entry
+                                                        return [
+                                                            key,
+                                                            choice[key],
+                                                        ];
+                                                }
+                                            })
+                                        );
+                                    }
+                                ),
                             ];
 
                         case "description_localizations" ||
                             "name_localizations":
                             // Defining entry
-                            const entry = option[key];
+                            const entry: {
+                                [key: string]: string;
+                            } = option[key];
 
                             // Searching and sorting keys of entry
                             const keys = Object.keys(entry).sort();
@@ -226,8 +249,13 @@ const transformApplicationCommandOptions = function (
                                 if (Object.keys(option).includes("options")) {
                                     // Checking if any option has type
                                     if (
-                                        option["options"].some((option) =>
-                                            Object.keys(option).includes(key)
+                                        option["options"].some(
+                                            (
+                                                option: ApplicationCommandOption
+                                            ) =>
+                                                Object.keys(option).includes(
+                                                    key
+                                                )
                                         )
                                     ) {
                                         return [
@@ -261,14 +289,19 @@ const transformApplicationCommandOptions = function (
     ];
 };
 
-module.exports = async (client) => {
+module.exports = async (client: Client) => {
     // Defining registered application commands collection
-    const registeredApplicationCommands = new Collection();
+    const registeredApplicationCommands: Collection<
+        string,
+        ApplicationCommand
+    > = new Collection();
 
     // Requesting registered application commands from Discord
     (
-        await client.rest.get(Routes.applicationCommands(client.application.id))
-    ).forEach((registeredApplicationCommand) =>
+        await client.rest.get(
+            Routes.applicationCommands(client.application?.id)
+        )
+    ).forEach((registeredApplicationCommand: ApplicationCommand) =>
         registeredApplicationCommands.set(
             registeredApplicationCommand.name,
             registeredApplicationCommand
@@ -276,7 +309,7 @@ module.exports = async (client) => {
     );
 
     // Creating array for requests to be sent to Discord
-    const promises = [];
+    const promises: Promise<any>[] = [];
 
     // Iterating over application commands
     client.applicationCommands.each(
@@ -291,18 +324,18 @@ module.exports = async (client) => {
                 promises.push(
                     client.rest
                         .post(
-                            Routes.applicationCommands(client.application.id),
+                            Routes.applicationCommands(client.application?.id),
                             {
                                 body: savedApplicationCommand,
                             }
                         )
-                        .then(
+                        .then(() => {
                             // Printing information
                             console.info(
                                 "[INFORMATION]:",
                                 `Successfully registered new application command '${savedApplicationCommandName}'`
-                            )
-                        )
+                            );
+                        })
                         .catch((error) =>
                             // Printing error
                             console.error("[ERROR]:", error)
@@ -319,20 +352,20 @@ module.exports = async (client) => {
                     client.rest
                         .patch(
                             Routes.applicationCommand(
-                                client.application.id,
+                                client.application?.id,
                                 registeredApplicationCommand.id
                             ),
                             {
                                 body: savedApplicationCommand,
                             }
                         )
-                        .then(
+                        .then(() => {
                             // Printing information
                             console.info(
                                 "[INFORMATION]:",
                                 `Successfully updated application command ${savedApplicationCommandName}`
-                            )
-                        )
+                            );
+                        })
                         .catch((error) =>
                             // Printing error
                             console.error("[ERROR]:", error)
@@ -356,17 +389,17 @@ module.exports = async (client) => {
                     client.rest
                         .delete(
                             Routes.applicationCommand(
-                                client.application.id,
+                                client.application?.id,
                                 registeredApplicationCommand.id
                             )
                         )
-                        .then(
+                        .then(() => {
                             // Printing information
                             console.info(
                                 "[INFORMATION]:",
                                 `Successfully deleted application command ${registeredApplicationCommandName}`
-                            )
-                        )
+                            );
+                        })
                         .catch((error) =>
                             // Printing error
                             console.error("[ERROR]:", error)

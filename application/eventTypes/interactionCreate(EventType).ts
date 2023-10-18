@@ -4,7 +4,7 @@ import path from "node:path";
 
 // Importing types
 import { Collection, Events, Interaction, InteractionType } from "discord.js";
-import { SavedInteractionType } from "../../types";
+import { SavedEventType, SavedInteractionType } from "../../types";
 
 // Creating interaction types collection
 const interactionTypes: Collection<InteractionType, SavedInteractionType> =
@@ -81,4 +81,4 @@ module.exports = {
             console.error("[ERROR]:", "Unknown interaction type");
         }
     },
-};
+} as SavedEventType;

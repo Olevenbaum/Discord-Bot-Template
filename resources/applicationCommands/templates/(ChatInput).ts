@@ -1,10 +1,11 @@
 // Importing classes and methods
-const {
+import {
     ApplicationCommandType,
     AutocompleteInteraction,
     ChatInputCommandInteraction,
     SlashCommandBuilder,
-} = require("discord.js");
+} from "discord.js";
+import { SavedChatInputCommand } from "../../../types";
 
 module.exports = {
     // Defining chat input command information and type
@@ -12,14 +13,9 @@ module.exports = {
     type: ApplicationCommandType.ChatInput,
 
     // Handling chat input command autocomplete
-    /**
-     * @param {AutocompleteInteraction} interaction
-     */
-    async autocomplete(interaction) {},
+
+    async autocomplete(interaction: AutocompleteInteraction) {},
 
     // Handling chat input command reponse
-    /**
-     * @param {ChatInputCommandInteraction} interaction
-     */
-    async execute(interaction) {},
-};
+    async execute(interaction: ChatInputCommandInteraction) {},
+} as SavedChatInputCommand;

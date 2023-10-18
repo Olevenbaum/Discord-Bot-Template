@@ -3,7 +3,10 @@ import {
     ApplicationCommandType,
     ChatInputCommandInteraction,
 } from "discord.js";
-import { SavedChatInputCommand } from "../../../../types";
+import {
+    SavedApplicationCommandType,
+    SavedChatInputCommand,
+} from "../../../../types";
 
 module.exports = {
     // Defining application command type
@@ -18,7 +21,7 @@ module.exports = {
                     (applicationCommand) =>
                         applicationCommand.type === this.type
                 )
-                .get(interaction.commandName);
+                .get(interaction.commandName) as SavedChatInputCommand; // TODO: Fix type
 
         // Checking if chat input command was found
         if (chatInputCommand) {
@@ -52,4 +55,4 @@ module.exports = {
             );
         }
     },
-};
+} as SavedApplicationCommandType;
