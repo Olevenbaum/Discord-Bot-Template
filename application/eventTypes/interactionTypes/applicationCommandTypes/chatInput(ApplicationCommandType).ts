@@ -14,6 +14,7 @@ module.exports = {
 
     // Handling interaction
     async execute(interaction: ChatInputCommandInteraction) {
+        //  TODO: Fix type
         // Searching for chat input command
         const chatInputCommand: SavedChatInputCommand | undefined =
             interaction.client.applicationCommands
@@ -36,7 +37,7 @@ module.exports = {
                     if (interaction.replied || interaction.deferred) {
                         // Sending follow up message
                         interaction.followUp({
-                            content: `There was an error while executing the chat input command **${interaction.commandName}**!`,
+                            content: `There was an error while executing the chat input command \`\`${interaction.commandName}\`\`!`,
                             ephemeral: true,
                         });
                     }
@@ -45,7 +46,7 @@ module.exports = {
             // Replying to interaction
             interaction.reply({
                 ephemeral: true,
-                content: `The chat input command **${interaction.commandName}** could not be found!`,
+                content: `The chat input command \`\`${interaction.commandName}\`\` could not be found!`,
             });
 
             // Printing error
@@ -55,4 +56,4 @@ module.exports = {
             );
         }
     },
-} as SavedApplicationCommandType;
+} as SavedApplicationCommandType; // TODO: Fix type

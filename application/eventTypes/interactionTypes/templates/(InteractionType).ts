@@ -1,10 +1,16 @@
 // Importing types
-import { Interaction, InteractionType } from "discord.js";
+import { InteractionType } from "discord.js";
+import { SavedInteractionType } from "../../../../types";
 
 module.exports = {
     // Defining interaction type
-    type: InteractionType,
+    type:
+        InteractionType.ApplicationCommand |
+        InteractionType.ApplicationCommandAutocomplete |
+        InteractionType.MessageComponent |
+        InteractionType.ModalSubmit |
+        InteractionType.Ping,
 
     // Handling interaction
-    async execute(interaction: Interaction) {},
-};
+    async execute(interaction) {},
+} as SavedInteractionType; // TODO: Fix type

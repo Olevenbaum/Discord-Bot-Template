@@ -16,7 +16,7 @@ import {
     SavedInteractionType,
 } from "../../../types";
 
-// Creating application commands types collection
+// Creating application command types collection
 const applicationCommandTypes: Collection<
     ApplicationCommandType,
     SavedApplicationCommandType
@@ -43,26 +43,11 @@ applicationCommandTypeFileNames.forEach((applicationCommandTypeFileName) => {
         applicationCommandTypeFileName
     ));
 
-    // Cecking required parts of application command type
-    if ("execute" in applicationCommandType) {
-        // Adding application command type to it's collection
-        applicationCommandTypes.set(
-            applicationCommandType.type,
-            applicationCommandType
-        );
-    } else {
-        // Printing warning
-        console.warn(
-            "[WARNING]:",
-            `Missing required 'execute' property of application command type '${applicationCommandType.type}'`
-        );
-
-        // Printing information
-        console.info(
-            "[INFORMATION]:",
-            `The application command type file for the application command type '${applicationCommandType.type}' is incomplete and thereby was not added`
-        );
-    }
+    // Adding application command type to it's collection
+    applicationCommandTypes.set(
+        applicationCommandType.type,
+        applicationCommandType
+    );
 });
 
 module.exports = {
@@ -76,6 +61,7 @@ module.exports = {
             | MessageContextMenuCommandInteraction
             | UserContextMenuCommandInteraction
     ) {
+        // TODO: Fix type
         // Searching for application command type
         const applicationCommandType = applicationCommandTypes.get(
             interaction.commandType
@@ -98,4 +84,4 @@ module.exports = {
             );
         }
     },
-} as SavedInteractionType;
+} as SavedInteractionType; // TODO: Fix type

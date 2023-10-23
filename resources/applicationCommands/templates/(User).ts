@@ -1,9 +1,5 @@
 // Importing classes and methods
-import {
-    ApplicationCommandType,
-    ContextMenuCommandBuilder,
-    UserContextMenuCommandInteraction,
-} from "discord.js";
+import { ApplicationCommandType, ContextMenuCommandBuilder } from "discord.js";
 import { SavedUserCommand } from "../../../types";
 
 module.exports = {
@@ -12,5 +8,5 @@ module.exports = {
     type: ApplicationCommandType.User,
 
     // Handling command reponse
-    async execute(interaction: UserContextMenuCommandInteraction) {},
-} as SavedUserCommand;
+    async execute(interaction) {},
+} as SavedUserCommand; // TODO: Fix type

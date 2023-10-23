@@ -1,10 +1,5 @@
 // Importing classes and methods
-import {
-    ApplicationCommandType,
-    AutocompleteInteraction,
-    ChatInputCommandInteraction,
-    SlashCommandBuilder,
-} from "discord.js";
+import { ApplicationCommandType, SlashCommandBuilder } from "discord.js";
 import { SavedChatInputCommand } from "../../../types";
 
 module.exports = {
@@ -14,8 +9,8 @@ module.exports = {
 
     // Handling chat input command autocomplete
 
-    async autocomplete(interaction: AutocompleteInteraction) {},
+    async autocomplete(interaction) {},
 
     // Handling chat input command reponse
-    async execute(interaction: ChatInputCommandInteraction) {},
-} as SavedChatInputCommand;
+    async execute(interaction) {},
+} as SavedChatInputCommand; // TODO: Fix type

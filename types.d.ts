@@ -10,7 +10,8 @@ import {
     UserContextMenuCommandInteraction,
 } from "discord.js";
 
-interface SavedApplicationCommandType {
+interface SavedApplicationCommand {
+    data: {};
     type: ApplicationCommandType;
     execute(
         interacion:
@@ -20,8 +21,7 @@ interface SavedApplicationCommandType {
     ): Promise<void>;
 }
 
-interface SavedApplicationCommand {
-    data: {};
+interface SavedApplicationCommandType {
     type: ApplicationCommandType;
     execute(
         interacion:

@@ -1,23 +1,16 @@
 // Importing types
-import {
-    ApplicationCommandType,
-    ChatInputCommandInteraction,
-    MessageContextMenuCommandInteraction,
-    UserContextMenuCommandInteraction,
-} from "discord.js";
-import { SavedApplicationCommand } from "../../../../../types";
+import { ApplicationCommandType } from "discord.js";
+import { SavedApplicationCommandType } from "../../../../../types";
 
 module.exports = {
     // Defining application command type
-    type: ApplicationCommandType,
+    type:
+        ApplicationCommandType.ChatInput |
+        ApplicationCommandType.Message |
+        ApplicationCommandType.User,
 
     // Handling interaction
-    async execute(
-        interaction:
-            | ChatInputCommandInteraction
-            | MessageContextMenuCommandInteraction
-            | UserContextMenuCommandInteraction
-    ) {
+    async execute(interaction) {
         // Searching for application command
         const applicationCommand = interaction.client.applicationCommands
             .filter(
@@ -38,7 +31,7 @@ module.exports = {
                     if (interaction.replied || interaction.deferred) {
                         // Sending follow up message
                         interaction.followUp({
-                            content: `There was an error while executing the application command **${interaction.commandName}**!`,
+                            content: `There was an error while executing the application command \`\`${interaction.commandName}\`\`!`,
                             ephemeral: true,
                         });
                     }
@@ -46,15 +39,15 @@ module.exports = {
         } else {
             // Replying to interaction
             interaction.reply({
-                content: `The application command **${interaction.commandName}** could not be found!`,
+                content: `The application command \`\`${interaction.commandName}\`\` could not be found!`,
                 ephemeral: true,
             });
 
             // Printing error
             console.error(
                 "[ERROR]:",
-                `No application command matching ${interaction.commandName} was found`
+                `No application command matching '${interaction.commandName}' was found`
             );
         }
     },
-} as SavedApplicationCommand;
+} as SavedApplicationCommandType; // TODO: Fix type

@@ -1,5 +1,6 @@
 // Importing types
 import { Client, Events } from "discord.js";
+import { SavedEventType } from "../../types";
 
 module.exports = {
     // Setting event kind and type
@@ -8,6 +9,7 @@ module.exports = {
 
     // Handling event
     async execute(client: Client) {
+        // TODO: Fix type
         // Updating registered application commands
         require("../updateApplicationCommands.js")(client);
 
@@ -19,4 +21,4 @@ module.exports = {
             }'`
         );
     },
-};
+} as SavedEventType; // TODO: Fix type

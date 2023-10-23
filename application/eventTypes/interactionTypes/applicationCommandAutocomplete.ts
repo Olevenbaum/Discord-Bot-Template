@@ -4,7 +4,7 @@ import {
     AutocompleteInteraction,
     InteractionType,
 } from "discord.js";
-import { SavedChatInputCommand } from "../../../types";
+import { SavedChatInputCommand, SavedInteractionType } from "../../../types";
 
 module.exports = {
     // Defining interaction type
@@ -12,13 +12,14 @@ module.exports = {
 
     // Handling interaction
     async execute(interaction: AutocompleteInteraction) {
+        // TODO: Fix type
         // Searching for chat input command
         const chatInputCommand = interaction.client.applicationCommands
             .filter(
                 (applicationCommand) =>
                     applicationCommand.type === ApplicationCommandType.ChatInput
             )
-            .get(interaction.commandName) as SavedChatInputCommand;
+            .get(interaction.commandName) as SavedChatInputCommand; // TODO: Fix type
 
         // Checking if chat input command was found
         if (chatInputCommand) {
@@ -37,4 +38,4 @@ module.exports = {
             );
         }
     },
-};
+} as SavedInteractionType; // TODO: Fix type

@@ -3,6 +3,10 @@ import {
     ApplicationCommandType,
     UserContextMenuCommandInteraction,
 } from "discord.js";
+import {
+    SavedApplicationCommandType,
+    SavedUserCommand,
+} from "../../../../types";
 
 module.exports = {
     // Setting command type
@@ -10,12 +14,13 @@ module.exports = {
 
     // Handling interaction
     async execute(interaction: UserContextMenuCommandInteraction) {
+        // TODO: Fix type
         // Searching for user command
         const userCommand = interaction.client.applicationCommands
             .filter(
                 (applicationCommand) => applicationCommand.type === this.type
             )
-            .get(interaction.commandName);
+            .get(interaction.commandName) as SavedUserCommand; // TODO: Fix type
 
         // Checking if user command was found
         if (userCommand) {
@@ -28,7 +33,7 @@ module.exports = {
                 if (interaction.replied || interaction.deferred) {
                     // Sending follow up message
                     interaction.followUp({
-                        content: `There was an error while executing the user command '${interaction.commandName}'!`,
+                        content: `There was an error while executing the user command \`\`${interaction.commandName}\`\`!`,
                         ephemeral: true,
                     });
                 }
@@ -36,7 +41,7 @@ module.exports = {
         } else {
             // Replying to interaction
             interaction.reply({
-                content: `The user command '${interaction.commandName}' could not be found!`,
+                content: `The user command \`\`${interaction.commandName}\`\` could not be found!`,
                 ephemeral: true,
             });
 
@@ -47,4 +52,4 @@ module.exports = {
             );
         }
     },
-};
+} as SavedApplicationCommandType; // Fix type

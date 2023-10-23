@@ -28,23 +28,8 @@ interactionTypeFileNames.forEach((interactionTypeFileName) => {
         interactionTypeFileName
     ));
 
-    // Checking required parts of interaction type
-    if ("execute" in interactionType) {
-        // Adding interaction type to it's collection
-        interactionTypes.set(interactionType.type, interactionType);
-    } else {
-        // Printing warning
-        console.warn(
-            "[WARNING]:",
-            `Missing required 'execute' property of interaction type ${interactionType.type}`
-        );
-
-        // Printing information
-        console.info(
-            "[INFORMATION]:",
-            `The interaction file for the interaction '${interactionType.type}' is incomplete and thereby was not added`
-        );
-    }
+    // Adding interaction type to it's collection
+    interactionTypes.set(interactionType.type, interactionType);
 });
 
 module.exports = {
@@ -54,6 +39,7 @@ module.exports = {
 
     // Handling event
     async execute(interaction: Interaction) {
+        // TODO: Fix type
         // Searching interaction type
         const interactionType = interactionTypes.get(interaction.type);
 
@@ -61,24 +47,37 @@ module.exports = {
         if (interactionType) {
             // Trying to execute interaction type specific script
             await interactionType.execute(interaction).catch((error: Error) => {
-                // Replying to interaction
-                interaction.reply({
-                    ephemeral: true,
-                    content: "There was an error handling your interaction!",
-                });
+                // Checking if interaction type is autocomplete
+                if (
+                    interaction.type !==
+                    InteractionType.ApplicationCommandAutocomplete
+                ) {
+                    // Replying to interaction
+                    interaction.reply({
+                        ephemeral: true,
+                        content:
+                            "There was an error handling your interaction!",
+                    });
+                }
 
                 // Printing error
                 console.error("[ERROR]:", error);
             });
         } else {
-            // Replying to interaction
-            interaction.reply({
-                ephemeral: true,
-                content: "Your interaction could not be resolved!",
-            });
+            // Checking if interaction type is autocomplete
+            if (
+                interaction.type !==
+                InteractionType.ApplicationCommandAutocomplete
+            ) {
+                // Replying to interaction
+                interaction.reply({
+                    ephemeral: true,
+                    content: "Your interaction could not be resolved!",
+                });
+            }
 
             // Printing error
             console.error("[ERROR]:", "Unknown interaction type");
         }
     },
-} as SavedEventType;
+} as SavedEventType; // TODO: Fix type

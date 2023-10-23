@@ -89,30 +89,11 @@ applicationCommandFileNames.forEach((applicationCommandFileName) => {
         applicationCommandFileName
     ));
 
-    // Checking required parts of application command
-    if (
-        "data" in applicationCommand &&
-        "execute" in applicationCommand &&
-        "type" in applicationCommand
-    ) {
-        // Adding application command to it's collection
-        client.applicationCommands.set(
-            applicationCommand.data.name,
-            applicationCommand
-        );
-    } else {
-        // Printing warning
-        console.warn(
-            "[WARNING]:",
-            `Missing required 'data' or 'execute' property of application command '${applicationCommand.data.name}'`
-        );
-
-        // Printing information
-        console.info(
-            "[INFORMATION]:",
-            `The application command file for the application command '${applicationCommand.data.name}' is incomplete and thereby was not added`
-        );
-    }
+    // Adding application command to it's collection
+    client.applicationCommands.set(
+        applicationCommand.data.name,
+        applicationCommand
+    );
 });
 
 // Printin information
@@ -134,30 +115,13 @@ eventTypeFileNames.forEach((eventTypeFileName) => {
         eventTypeFileName
     ));
 
-    // Checking required parts of event
-    if ("execute" in eventType) {
-        // Checking whether event is called once
-        if (eventType.once) {
-            // Adding once eventlistener
-            client.once(eventType.type, (...args) =>
-                eventType.execute(...args)
-            );
-        } else {
-            // Adding eventlistener
-            client.on(eventType.type, (...args) => eventType.execute(...args));
-        }
+    // Checking whether event is called once
+    if (eventType.once) {
+        // Adding once eventlistener
+        client.once(eventType.type, (...args) => eventType.execute(...args));
     } else {
-        // Printing warning
-        console.warn(
-            "[WARNING]:",
-            `Missing required 'execute' property of event '${eventType.type}'`
-        );
-
-        // Printing information
-        console.info(
-            "[INFORMATION]:",
-            `The event file for the event '${eventType.name}' is incomplete and thereby was not added`
-        );
+        // Adding eventlistener
+        client.on(eventType.type, (...args) => eventType.execute(...args));
     }
 });
 
