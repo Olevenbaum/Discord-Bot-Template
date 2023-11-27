@@ -9,7 +9,7 @@
     },
     "description": "Discord bot template for discord.js v14",
     "dependencies": {
-        "discord.js": "^14.13.0",
+        "discord.js": "^14.14.1",
         "json": "^11.0.0",
         "npm": "^10.2.0"
     },
