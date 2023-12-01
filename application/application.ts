@@ -1,178 +1,114 @@
-// Importing modules
+// Import modules
 import fs from "node:fs";
 import path from "node:path";
 
-// Importing types
-import { Client, Collection, GatewayIntentBits } from "discord.js";
-import { SavedApplicationCommand, SavedEventType } from "../types";
+// Import types
+import {
+    Client,
+    DiscordAPIError,
+    GatewayIntentBits,
+    OAuthErrorData,
+} from "discord.js";
+import { SavedEventType } from "../declarations/types";
 
-// Importing configuration data
-import { applications } from "../configuration.json";
+// Import configuration data
+import { applications, applicationIteration } from "../configuration.json";
 
-// Defining prototype function for asynchronous find for array
-Array.prototype.asynchronousFind = async function <Element>(
-    predicate: (
-        element: Element,
-        key: number,
-        array: Element[]
-    ) => Promise<boolean>,
-    thisArg: any = null
-): Promise<Element | undefined> {
-    // Binding second argument to callback function
-    const boundPredicate: (
-        element: Element,
-        key: number,
-        thisArg: any
-    ) => Promise<boolean> = predicate.bind(thisArg);
-
-    // Iterating over keys of array
-    for (const key of this.keys()) {
-        // Checking if callback function returns true for element
-        if (await boundPredicate(this.at(key), key, this)) {
-            // Returning element
-            return this.at(key);
-        }
-    }
-
-    // Returning undefined
-    return undefined;
-};
-
-// Defining prototype function for rotating arrays
-Array.prototype.rotate = function <Element>(
-    counter: number = 1,
-    reverse: boolean = false
-): Element[] {
-    // Reducing counter
-    counter %= this.length;
-
-    // Checking if direction is reversed
-    if (reverse) {
-        // Rotating array clockwise
-        this.push(...this.splice(0, this.length - counter));
-    } else {
-        // Rotating array counterclockwise
-        this.unshift(...this.splice(counter, this.length));
-    }
-
-    // Returning array
-    return this;
-};
-
-// Creating new client
+// Create new client
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-// Printin information
-console.info("[INFORMATION]:", "Creating application commands collection...");
+// Print information
+console.info("[INFORMATION]:", "Defining functions...");
 
-// Creating application commands collection
-client.applicationCommands = new Collection();
+// Execute script for defining functions
+require("./defineFunctions.ts");
 
-// Defining application commands path
-const applicationCommandsPath = path.join(
-    __dirname,
-    "../resources/applicationCommands"
+// Print information
+console.info(
+    "[INFORMATION]:",
+    "Reading files and adding them to their collections..."
 );
 
-// Reading application command filenames
-const applicationCommandFileNames = fs
-    .readdirSync(applicationCommandsPath)
-    .filter((applicationCommandFileName) =>
-        applicationCommandFileName.endsWith(".ts")
-    );
+// Execute script for adding files to their collections
+require("./createCollections.ts");
 
-// Iterate over all application command files
-applicationCommandFileNames.forEach((applicationCommandFileName) => {
-    // Reading application command
-    const applicationCommand: SavedApplicationCommand = require(path.join(
-        applicationCommandsPath,
-        applicationCommandFileName
-    ));
-
-    // Adding application command to it's collection
-    client.applicationCommands.set(
-        applicationCommand.data.name,
-        applicationCommand
-    );
-});
-
-// Printin information
+// Print information
 console.info("[INFORMATION]:", "Creating event listeners...");
 
-// Defining events path
+// Define event types path
 const eventTypesPath = path.join(__dirname, "./eventTypes");
 
-// Reading event filenames
+// Read event type filenames
 const eventTypeFileNames = fs
     .readdirSync(eventTypesPath)
-    .filter((eventTypeFileName) => eventTypeFileName.endsWith(".js"));
+    .filter((eventTypeFileName) => eventTypeFileName.endsWith(".ts"));
 
-// Iterate over event files
+// Iterate over event type files
 eventTypeFileNames.forEach((eventTypeFileName) => {
-    // Reading event
+    // Read event
     const eventType: SavedEventType = require(path.join(
         eventTypesPath,
         eventTypeFileName
     ));
 
-    // Checking whether event is called once
+    // Check whether event type is called once
     if (eventType.once) {
-        // Adding once eventlistener
+        // Add once eventlistener
         client.once(eventType.type, (...args) => eventType.execute(...args));
     } else {
-        // Adding eventlistener
+        // Add eventlistener
         client.on(eventType.type, (...args) => eventType.execute(...args));
     }
 });
 
-// Printin information
+// Print information
 console.info("[INFORMATION]:", "Logging in bot application at Discord...");
 
-// Searching for argument of process
-const tokenArgument = process.argv.findIndex((argument) =>
+// Search for argument of process
+const argumentIndex: number | undefined = process.argv.findIndex((argument) =>
     argument.startsWith("-application")
 );
 
-// Defining tokens array
+// Define tokens array
 const tokens = applications.map(({ token }) => token);
 
-// Checking if argument for different token was provided
-if (tokenArgument && !isNaN(parseInt(process.argv[tokenArgument + 1]))) {
+// Check if argument for different token was provided
+if (argumentIndex && !isNaN(parseInt(process.argv[argumentIndex + 1] || "0"))) {
     // Rotate array
-    tokens.rotate(parseInt(process.argv[tokenArgument + 1]));
+    tokens.rotate(parseInt(process.argv[argumentIndex + 1] || "0") ?? null);
 }
 
-// Iterating over application tokens
+// Iterate over application tokens
 tokens.asynchronousFind(async (token) => {
-    // Checking if token could be valid
+    // Check if token could be valid
     if (token && token.length > 0) {
-        // Trying to login application
+        // Try to login application
         return await client
             .login(token)
             .then(() => {
-                // Returning true
+                // Return true
                 return true;
             })
-            .catch((error) => {
-                // Checking if error is caused by wrong token
+            .catch((error: DiscordAPIError) => {
+                // Check if error is caused by wrong token
                 if (error.code === "TokenInvalid") {
-                    // Printing warning
+                    // Print warning
                     console.warn(
                         "[WARNING]:",
                         "Token was not accepted by Discord"
                     );
                 } else {
-                    // Printing error
+                    // Print error
                     console.error("[ERROR]:", error);
                 }
 
-                // Returning false
-                return false;
+                // Return value based on application iteration
+                return applicationIteration;
             });
     }
-    // Printing warning
+    // Print warning
     console.warn("[WARNING]:", "Token does not meet the requirements");
 
-    // Returning false
-    return false;
+    // Return value based on application iteration
+    return applicationIteration;
 });

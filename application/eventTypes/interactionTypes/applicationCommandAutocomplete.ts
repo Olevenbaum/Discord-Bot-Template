@@ -1,41 +1,47 @@
-// Importing types
+// Import types
 import {
     ApplicationCommandType,
     AutocompleteInteraction,
     InteractionType,
 } from "discord.js";
-import { SavedChatInputCommand, SavedInteractionType } from "../../../types";
+import {
+    SavedChatInputCommand,
+    SavedInteractionType,
+} from "../../../declarations/types";
 
-module.exports = {
-    // Defining interaction type
+// Define interaction type
+const interactionType: SavedInteractionType = {
+    // Set interaction type
     type: InteractionType.ApplicationCommandAutocomplete,
 
-    // Handling interaction
+    // Handle interaction
     async execute(interaction: AutocompleteInteraction) {
-        // TODO: Fix type
-        // Searching for chat input command
-        const chatInputCommand = interaction.client.applicationCommands
+        // Search for chat input command
+        const chatInputCommand = global.applicationCommands
             .filter(
                 (applicationCommand) =>
                     applicationCommand.type === ApplicationCommandType.ChatInput
             )
             .get(interaction.commandName) as SavedChatInputCommand; // TODO: Fix type
 
-        // Checking if chat input command was found
+        // Check if chat input command was found
         if (chatInputCommand) {
-            // Trying to execute chat input command specific script
+            // Try to execute chat input command specific function
             await chatInputCommand
                 .autocomplete(interaction)
                 .catch(async (error) => {
-                    // Printing error
+                    // Print error
                     console.error("[ERROR]:", error);
                 });
         } else {
-            // Printing error
+            // Print error
             console.error(
                 "[ERROR]:",
                 `No chat input command matching '${interaction.commandName}' was found`
             );
         }
     },
-} as SavedInteractionType; // TODO: Fix type
+};
+
+// Export interaction type
+export default interactionType;

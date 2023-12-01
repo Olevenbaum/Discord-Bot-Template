@@ -1,12 +1,16 @@
 // Importing classes and methods
 import { ApplicationCommandType, ContextMenuCommandBuilder } from "discord.js";
-import { SavedUserCommand } from "../../../types";
+import { SavedUserCommand } from "../../../declarations/types";
 
-module.exports = {
-    // Defining user command information and type
+// Define user command
+const userCommand: SavedUserCommand = {
+    // Set user command information and type
     data: new ContextMenuCommandBuilder().setName("").setType(this.type),
     type: ApplicationCommandType.User,
 
-    // Handling command reponse
+    // Handle command reponse
     async execute(interaction) {},
-} as SavedUserCommand; // TODO: Fix type
+};
+
+// Export user command
+export default userCommand;

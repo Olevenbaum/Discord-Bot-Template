@@ -1,19 +1,18 @@
-// Importing types
+// Import types
 import { Client, Events } from "discord.js";
-import { SavedEventType } from "../../types";
+import { SavedEventType } from "../../declarations/types";
 
-module.exports = {
-    // Setting event kind and type
+const eventType: SavedEventType = {
+    // Set event kind and type
     once: true,
     type: Events.ClientReady,
 
-    // Handling event
+    // Handle event
     async execute(client: Client) {
-        // TODO: Fix type
-        // Updating registered application commands
-        require("../updateApplicationCommands.js")(client);
+        // Update registered application commands
+        require("../updateApplicationCommands.ts")(client);
 
-        // Printing information
+        // Print information
         console.info(
             "[INFORMATION]:",
             `Successfully logged in at Discord with username '${
@@ -21,4 +20,7 @@ module.exports = {
             }'`
         );
     },
-} as SavedEventType; // TODO: Fix type
+};
+
+// Export event type
+export default eventType;

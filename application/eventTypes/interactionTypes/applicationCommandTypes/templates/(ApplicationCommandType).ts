@@ -1,35 +1,36 @@
-// Importing types
+// Import types
 import { ApplicationCommandType } from "discord.js";
-import { SavedApplicationCommandType } from "../../../../../types";
+import { SavedApplicationCommandType } from "../../../../../declarations/types";
 
-module.exports = {
-    // Defining application command type
+// Define application command type
+const applicationCommandType: SavedApplicationCommandType = {
+    // Define application command type
     type:
-        ApplicationCommandType.ChatInput |
-        ApplicationCommandType.Message |
+        ApplicationCommandType.ChatInput ||
+        ApplicationCommandType.Message ||
         ApplicationCommandType.User,
 
-    // Handling interaction
+    // Handle interaction
     async execute(interaction) {
-        // Searching for application command
-        const applicationCommand = interaction.client.applicationCommands
+        // Search for application command
+        const applicationCommand = global.applicationCommands
             .filter(
                 (applicationCommand) => applicationCommand.type === this.type
             )
             .get(interaction.commandName);
 
-        // Checking if application command was found
+        // Check if application command was found
         if (applicationCommand) {
-            // Trying to execute application command specific script
+            // Try to execute application command specific function
             await applicationCommand
                 .execute(interaction)
                 .catch((error: Error) => {
                     // Printint error
                     console.error("[ERROR]:", error);
 
-                    // Checking if application command interaction was acknowledged
+                    // Check if application command interaction was acknowledged
                     if (interaction.replied || interaction.deferred) {
-                        // Sending follow up message
+                        // Send follow up message
                         interaction.followUp({
                             content: `There was an error while executing the application command \`\`${interaction.commandName}\`\`!`,
                             ephemeral: true,
@@ -37,17 +38,20 @@ module.exports = {
                     }
                 });
         } else {
-            // Replying to interaction
+            // Reply to interaction
             interaction.reply({
                 content: `The application command \`\`${interaction.commandName}\`\` could not be found!`,
                 ephemeral: true,
             });
 
-            // Printing error
+            // Print error
             console.error(
                 "[ERROR]:",
                 `No application command matching '${interaction.commandName}' was found`
             );
         }
     },
-} as SavedApplicationCommandType; // TODO: Fix type
+};
+
+// Export application command type
+export default applicationCommandType;

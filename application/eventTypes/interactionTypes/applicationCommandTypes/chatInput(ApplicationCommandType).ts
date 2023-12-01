@@ -1,4 +1,4 @@
-// Importing types
+// Import types
 import {
     ApplicationCommandType,
     ChatInputCommandInteraction,
@@ -6,36 +6,36 @@ import {
 import {
     SavedApplicationCommandType,
     SavedChatInputCommand,
-} from "../../../../types";
+} from "../../../../declarations/types";
 
-module.exports = {
-    // Defining application command type
+// Define application command type
+const applicationCommandType: SavedApplicationCommandType = {
+    // Set application command type
     type: ApplicationCommandType.ChatInput,
 
-    // Handling interaction
+    // Handle interaction
     async execute(interaction: ChatInputCommandInteraction) {
-        //  TODO: Fix type
-        // Searching for chat input command
+        // Search for chat input command
         const chatInputCommand: SavedChatInputCommand | undefined =
-            interaction.client.applicationCommands
+            global.applicationCommands
                 .filter(
                     (applicationCommand) =>
                         applicationCommand.type === this.type
                 )
                 .get(interaction.commandName) as SavedChatInputCommand; // TODO: Fix type
 
-        // Checking if chat input command was found
+        // Check if chat input command was found
         if (chatInputCommand) {
-            // Trying to execute chat input command specific script
+            // Try to execute chat input command specific function
             await chatInputCommand
                 .execute(interaction)
                 .catch(async (error: Error) => {
-                    // Printing error
+                    // Print error
                     console.error("[ERROR]:", error);
 
-                    // Checking if chat input command interaction was acknowledged
+                    // Check if chat input command interaction was acknowledged
                     if (interaction.replied || interaction.deferred) {
-                        // Sending follow up message
+                        // Send follow up message
                         interaction.followUp({
                             content: `There was an error while executing the chat input command \`\`${interaction.commandName}\`\`!`,
                             ephemeral: true,
@@ -43,17 +43,20 @@ module.exports = {
                     }
                 });
         } else {
-            // Replying to interaction
+            // Reply to interaction
             interaction.reply({
                 ephemeral: true,
                 content: `The chat input command \`\`${interaction.commandName}\`\` could not be found!`,
             });
 
-            // Printing error
+            // Print error
             console.error(
                 "[ERROR]:",
                 `No chat input command matching '${interaction.commandName}' was found`
             );
         }
     },
-} as SavedApplicationCommandType; // TODO: Fix type
+};
+
+// Export application command type
+export default applicationCommandType;

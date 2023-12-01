@@ -1,17 +1,20 @@
-// Importing types
+// Import types
 import {
     ApplicationCommandType,
     AutocompleteInteraction,
     ChatInputCommandInteraction,
-    Events,
+    ClientEvents,
     Interaction,
     InteractionType,
+    ContextMenuCommandBuilder,
     MessageContextMenuCommandInteraction,
+    SlashCommandBuilder,
     UserContextMenuCommandInteraction,
 } from "discord.js";
 
+// Create interfaces
 interface SavedApplicationCommand {
-    data: {};
+    data: SlashCommandBuilder | ContextMenuCommandBuilder;
     type: ApplicationCommandType;
     execute(
         interacion:
@@ -32,13 +35,14 @@ interface SavedApplicationCommandType {
 }
 
 interface SavedChatInputCommand extends SavedApplicationCommand {
+    data: SlashCommandBuilder;
     autocomplete(interacion: AutocompleteInteraction): Promise<void>;
     execute(interacion: ChatInputCommandInteraction): Promise<void>;
 }
 
 interface SavedEventType {
     once: boolean;
-    type: Events;
+    type: keyof ClientEvents;
     execute(...args: any[]): Promise<void>;
 }
 
@@ -48,9 +52,11 @@ interface SavedInteractionType {
 }
 
 interface SavedMessageCommand extends SavedApplicationCommand {
+    data: ContextMenuCommandBuilder;
     execute(interacion: MessageContextMenuCommandInteraction): Promise<void>;
 }
 
 interface SavedUserCommand extends SavedApplicationCommand {
+    data: ContextMenuCommandBuilder;
     execute(interacion: UserContextMenuCommandInteraction): Promise<void>;
 }
