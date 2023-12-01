@@ -1,6 +1,8 @@
 .env
 .vscode
 
+*.js
+
 node_modules
 
 configuration.json
