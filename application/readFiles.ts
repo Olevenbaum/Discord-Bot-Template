@@ -105,4 +105,7 @@ module.exports = () => {
             applicationCommand
         );
     });
+
+    // Import blocked users
+    global.blockedUsers = require("../resources/blockedUsers.json");
 };

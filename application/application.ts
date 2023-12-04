@@ -29,8 +29,8 @@ console.info(
     "Reading files and adding them to their collections..."
 );
 
-// Execute script for adding files to their collections
-require("./createCollections.ts");
+// Execute script for reading files
+require("./readFiles.ts");
 
 // Print information
 console.info("[INFORMATION]:", "Creating event listeners...");

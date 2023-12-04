@@ -19,6 +19,7 @@ declare global {
         ApplicationCommandType,
         SavedApplicationCommandType
     >;
+    var blockedUsers: string[];
     var interactionTypes: Collection<InteractionType, SavedInteractionType>;
     function compareApplicationCommands(
         registeredApplicationCommand: ApplicationCommand,
@@ -31,4 +32,4 @@ declare global {
 }
 
 // Export global variables
-export {};
+export { };
