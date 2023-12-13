@@ -12,51 +12,57 @@ import {
     UserContextMenuCommandInteraction,
 } from "discord.js";
 
-// Create interfaces
+// Interface for locally saved application commands
 interface SavedApplicationCommand {
     data: SlashCommandBuilder | ContextMenuCommandBuilder;
     type: ApplicationCommandType;
     execute(
-        interacion:
+        interaction:
             | ChatInputCommandInteraction
             | MessageContextMenuCommandInteraction
-            | UserContextMenuCommandInteraction
+            | UserContextMenuCommandInteraction,
     ): Promise<void>;
 }
 
+// Interface for locally saved application commands
 interface SavedApplicationCommandType {
     type: ApplicationCommandType;
     execute(
-        interacion:
+        interaction:
             | ChatInputCommandInteraction
             | MessageContextMenuCommandInteraction
-            | UserContextMenuCommandInteraction
+            | UserContextMenuCommandInteraction,
     ): Promise<void>;
 }
 
+// Interface for locally saved chat input commands
 interface SavedChatInputCommand extends SavedApplicationCommand {
     data: SlashCommandBuilder;
-    autocomplete(interacion: AutocompleteInteraction): Promise<void>;
-    execute(interacion: ChatInputCommandInteraction): Promise<void>;
+    autocomplete(interaction: AutocompleteInteraction): Promise<void>;
+    execute(interaction: ChatInputCommandInteraction): Promise<void>;
 }
 
+// Interface for locally saved event types
 interface SavedEventType {
     once: boolean;
     type: keyof ClientEvents;
     execute(...args: any[]): Promise<void>;
 }
 
+// Interface for locally saved interaction types
 interface SavedInteractionType {
     type: InteractionType;
     execute(Interaction: Interaction): Promise<void>;
 }
 
+// Interface for locally saved message commands
 interface SavedMessageCommand extends SavedApplicationCommand {
     data: ContextMenuCommandBuilder;
-    execute(interacion: MessageContextMenuCommandInteraction): Promise<void>;
+    execute(interaction: MessageContextMenuCommandInteraction): Promise<void>;
 }
 
+// Interface for locally saved user commands
 interface SavedUserCommand extends SavedApplicationCommand {
     data: ContextMenuCommandBuilder;
-    execute(interacion: UserContextMenuCommandInteraction): Promise<void>;
+    execute(interaction: UserContextMenuCommandInteraction): Promise<void>;
 }

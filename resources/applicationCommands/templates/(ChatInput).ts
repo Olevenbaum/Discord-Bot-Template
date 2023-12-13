@@ -1,4 +1,4 @@
-// Importing classes and methods
+// Import classes and methods
 import { ApplicationCommandType, SlashCommandBuilder } from "discord.js";
 import { SavedChatInputCommand } from "../../../declarations/types";
 
@@ -9,12 +9,11 @@ const chatInputCommand: SavedChatInputCommand = {
     type: ApplicationCommandType.ChatInput,
 
     // Handle chat input command autocomplete
-
     async autocomplete(interaction) {},
 
-    // Handle chat input command reponse
+    // Handle chat input command response
     async execute(interaction) {},
 };
 
-// Export application command
+// Export chat input command
 export default chatInputCommand;

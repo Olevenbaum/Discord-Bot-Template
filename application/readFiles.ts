@@ -17,95 +17,95 @@ module.exports = () => {
     // Define interaction types path
     const interactionTypesPath = path.join(__dirname, "./interactionTypes");
 
-    // Read interacion type filenames
+    // Read interaction type filenames
     const interactionTypeFileNames = fs
         .readdirSync(interactionTypesPath)
         .filter((interactionTypeFileName) =>
-            interactionTypeFileName.endsWith(".js")
+            interactionTypeFileName.endsWith(".js"),
         );
 
     // Iterate over interaction type files
     interactionTypeFileNames.forEach((interactionTypeFileName) => {
         // Read interaction type
-        const interactionType: SavedInteractionType = require(path.join(
-            interactionTypesPath,
-            interactionTypeFileName
-        ));
+        const interactionType: SavedInteractionType = require(
+            path.join(interactionTypesPath, interactionTypeFileName),
+        );
 
         // Add interaction type to it's collection
-        global.interactionTypes.set(interactionType.type, interactionType);
+        interactionTypes.set(interactionType.type, interactionType);
     });
 
     // Print information
     console.info(
         "[INFORMATION]:",
-        "Creating application command types collection..."
+        "Creating application command types collection...",
     );
 
     // Define application command types path
     const applicationCommandTypesPath = path.join(
         __dirname,
-        "./applicationCommandTypes"
+        "./applicationCommandTypes",
     );
 
     // Read application command type filenames
     const applicationCommandTypeFileNames = fs
         .readdirSync(applicationCommandTypesPath)
         .filter((applicationCommandTypeFileName) =>
-            applicationCommandTypeFileName.endsWith(".js")
+            applicationCommandTypeFileName.endsWith(".js"),
         );
 
     // Iterate over application command types
     applicationCommandTypeFileNames.forEach(
         (applicationCommandTypeFileName) => {
             // Read application command type
-            const applicationCommandType: SavedApplicationCommandType = require(path.join(
-                applicationCommandTypesPath,
-                applicationCommandTypeFileName
-            ));
+            const applicationCommandType: SavedApplicationCommandType = require(
+                path.join(
+                    applicationCommandTypesPath,
+                    applicationCommandTypeFileName,
+                ),
+            );
 
             // Add application command type to it's collection
-            global.applicationCommandTypes.set(
+            applicationCommandTypes.set(
                 applicationCommandType.type,
-                applicationCommandType
+                applicationCommandType,
             );
-        }
+        },
     );
 
     // Print information
     console.info(
         "[INFORMATION]:",
-        "Creating application commands collection..."
+        "Creating application commands collection...",
     );
 
     // Define application commands path
     const applicationCommandsPath = path.join(
         __dirname,
-        "../resources/applicationCommands"
+        "../resources/applicationCommands",
     );
 
     // Read application command filenames
     const applicationCommandFileNames = fs
         .readdirSync(applicationCommandsPath)
         .filter((applicationCommandFileName) =>
-            applicationCommandFileName.endsWith(".ts")
+            applicationCommandFileName.endsWith(".ts"),
         );
 
     // Iterate over all application command files
     applicationCommandFileNames.forEach((applicationCommandFileName) => {
         // Read application command
-        const applicationCommand: SavedApplicationCommand = require(path.join(
-            applicationCommandsPath,
-            applicationCommandFileName
-        ));
+        const applicationCommand: SavedApplicationCommand = require(
+            path.join(applicationCommandsPath, applicationCommandFileName),
+        );
 
         // Add application command to it's collection
-        global.applicationCommands.set(
+        applicationCommands.set(
             applicationCommand.data.name,
-            applicationCommand
+            applicationCommand,
         );
     });
 
     // Import blocked users
-    global.blockedUsers = require("../resources/blockedUsers.json");
+    blockedUsers.push(require("../resources/blockedUsers.json"));
 };

@@ -5,14 +5,15 @@ import { SavedMessageCommand } from "../../../declarations/types";
 // Define message command
 const messageCommand: SavedMessageCommand = {
     // Set message command information and type
-    data: new ContextMenuCommandBuilder()
-        .setName("")
-        .setType(messageCommand.type),
+    data: new ContextMenuCommandBuilder().setName(""),
     type: ApplicationCommandType.Message,
 
-    // Handle command reponse
+    // Handle command response
     async execute(interaction) {},
 };
+
+// Set message command type
+messageCommand.data.setType(messageCommand.type);
 
 // Export message command
 export default messageCommand;

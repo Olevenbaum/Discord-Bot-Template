@@ -2,6 +2,7 @@
 import { Events } from "discord.js";
 import { SavedEventType } from "../../../declarations/types";
 
+// Define event type
 const eventType: SavedEventType = {
     // Set event kind and type
     once: false,
@@ -56,7 +57,6 @@ const eventType: SavedEventType = {
         Events.MessageReactionRemoveEmoji ||
         Events.MessageUpdate ||
         Events.PresenceUpdate ||
-        Events.Raw ||
         Events.ShardDisconnect ||
         Events.ShardError ||
         Events.ShardReady ||
@@ -73,7 +73,6 @@ const eventType: SavedEventType = {
         Events.ThreadUpdate ||
         Events.TypingStart ||
         Events.UserUpdate ||
-        Events.VoiceServerUpdate ||
         Events.VoiceStateUpdate ||
         Events.Warn ||
         Events.WebhooksUpdate,

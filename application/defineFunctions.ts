@@ -11,15 +11,15 @@ module.exports = () => {
         predicate: (
             element: Element,
             key: number,
-            array: Element[]
+            array: Element[],
         ) => Promise<boolean>,
-        thisArg: any = null
+        thisArg: any = null,
     ): Promise<Element | undefined> {
         // Bind second argument to callback function
         const boundPredicate: (
             element: Element,
             key: number,
-            thisArg: any
+            thisArg: any,
         ) => Promise<boolean> = predicate.bind(thisArg);
 
         // Iterate over keys of array
@@ -38,7 +38,7 @@ module.exports = () => {
     // Define prototype rotate function for arrays
     Array.prototype.rotate = function <Element>(
         counter: number = 1,
-        reverse: boolean = false
+        reverse: boolean = false,
     ): Element[] {
         // Reduce counter
         counter %= this.length;
@@ -59,7 +59,7 @@ module.exports = () => {
     // Define function for comparison of registered and saved application commands
     global.compareApplicationCommands = function (
         registeredApplicationCommand,
-        savedApplicationCommand
+        savedApplicationCommand,
     ) {
         // Define default values
         const defaultValues = {
@@ -71,13 +71,13 @@ module.exports = () => {
         // Add application command type to saved application command data
         savedApplicationCommand.data["type"] = savedApplicationCommand.type;
 
-        // Search and sorting common keys
+        // Search and sort common keys
         const commonKeys = Object.keys(savedApplicationCommand.data)
             .filter((key) => key in registeredApplicationCommand)
             .sort();
 
         // Overwrite imported version of registered application command
-        const owerwrittenRegisteredApplicationCommand = Object.fromEntries(
+        const overwrittenRegisteredApplicationCommand = Object.fromEntries(
             commonKeys.map((key) => {
                 // Check for specific keys
                 switch (key) {
@@ -92,7 +92,7 @@ module.exports = () => {
                         return [
                             key,
                             Object.fromEntries(
-                                keys.map((key) => [key, entry[key]])
+                                keys.map((key) => [key, entry[key]]),
                             ),
                         ];
 
@@ -100,23 +100,37 @@ module.exports = () => {
                         // Transform application command options
                         return transformApplicationCommandOptions(
                             registeredApplicationCommand[key],
-                            true
+                            true,
                         );
 
                     default:
                         // Return entry
                         return [key, registeredApplicationCommand[key]];
                 }
-            })
+            }),
         );
 
+        global.isFromType = function <Type>(
+            object: any,
+            keys: (keyof Type)[],
+        ): object is Type {
+            // Check if object and keys of type exist
+            if (!(object && Array.isArray(keys))) {
+                // Return false
+                return false;
+            }
+
+            // Return whether object includes all keys of type
+            return keys.reduce((impl, key) => impl && key in object, true);
+        };
+
         // Overwrite saved application command
-        const owerwrittenSavedApplicationCommand = Object.fromEntries(
+        const overwrittenSavedApplicationCommand = Object.fromEntries(
             commonKeys.map((key) => {
                 // Check for specific keys
                 switch (key) {
                     case "description_localizations" || "name_localizations":
-                        // Defin entry
+                        // Define entry
                         const entry = savedApplicationCommand.data[key];
 
                         // Search and sort keys of entry
@@ -126,14 +140,14 @@ module.exports = () => {
                         return [
                             key,
                             Object.fromEntries(
-                                keys.map((key) => [key, entry[key]])
+                                keys.map((key) => [key, entry[key]]),
                             ),
                         ];
 
                     case "options":
                         // Return transformed application command options
                         return transformApplicationCommandOptions(
-                            savedApplicationCommand.data[key]
+                            savedApplicationCommand.data[key],
                         );
 
                     default:
@@ -144,20 +158,20 @@ module.exports = () => {
                                 defaultValues[key],
                         ];
                 }
-            })
+            }),
         );
 
         // Return comparison
         return (
-            JSON.stringify(owerwrittenRegisteredApplicationCommand) ===
-            JSON.stringify(owerwrittenSavedApplicationCommand)
+            JSON.stringify(overwrittenRegisteredApplicationCommand) ===
+            JSON.stringify(overwrittenSavedApplicationCommand)
         );
     };
 
-    // Define function for transforming application command options
+    // Define function for transform application command options
     global.transformApplicationCommandOptions = function (
         applicationCommandOptions,
-        registered = false
+        registered = false,
     ) {
         // Define default option values
         const defaultOptionValues = { required: false };
@@ -168,14 +182,14 @@ module.exports = () => {
             applicationCommandOptions.map((option) => {
                 // Search keys of option
                 const keys = Object.keys(option).filter(
-                    (key) => typeof option[key] !== "undefined"
+                    (key) => typeof option[key] !== "undefined",
                 );
 
                 // Check for option type
                 if (
                     option.type > ApplicationCommandOptionType.SubcommandGroup
                 ) {
-                    // Iterat over keys of default option values
+                    // Iterate over keys of default option values
                     Object.keys(defaultOptionValues).forEach((key) => {
                         // Check for key in keys
                         if (!keys.includes(key)) {
@@ -235,7 +249,7 @@ module.exports = () => {
                                                             // Search and sort keys of entry
                                                             const keys =
                                                                 Object.keys(
-                                                                    entry
+                                                                    entry,
                                                                 ).sort();
 
                                                             // Return sorted entry
@@ -244,14 +258,14 @@ module.exports = () => {
                                                                 Object.fromEntries(
                                                                     keys.map(
                                                                         (
-                                                                            key
+                                                                            key,
                                                                         ) => [
                                                                             key,
                                                                             entry[
                                                                                 key
                                                                             ],
-                                                                        ]
-                                                                    )
+                                                                        ],
+                                                                    ),
                                                                 ),
                                                             ];
 
@@ -262,9 +276,9 @@ module.exports = () => {
                                                                 choice[key],
                                                             ];
                                                     }
-                                                })
+                                                }),
                                             );
-                                        }
+                                        },
                                     ),
                                 ];
 
@@ -282,7 +296,7 @@ module.exports = () => {
                                 return [
                                     key,
                                     Object.fromEntries(
-                                        keys.map((key) => [key, entry[key]])
+                                        keys.map((key) => [key, entry[key]]),
                                     ),
                                 ];
 
@@ -290,7 +304,7 @@ module.exports = () => {
                                 // Transform options
                                 return transformApplicationCommandOptions(
                                     option[key],
-                                    registered
+                                    registered,
                                 );
 
                             case "type":
@@ -306,11 +320,11 @@ module.exports = () => {
                                         if (
                                             option["options"].some(
                                                 (
-                                                    option: ApplicationCommandOption
+                                                    option: ApplicationCommandOption,
                                                 ) =>
                                                     Object.keys(
-                                                        option
-                                                    ).includes(key)
+                                                        option,
+                                                    ).includes(key),
                                             )
                                         ) {
                                             // Return entry
@@ -341,7 +355,7 @@ module.exports = () => {
                                     option[key] ?? defaultOptionValues[key],
                                 ];
                         }
-                    })
+                    }),
                 );
             }),
         ];

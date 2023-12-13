@@ -11,8 +11,7 @@
     "dependencies": {
         "@types/node": "^20.10.1",
         "discord.js": "^14.14.1",
-        "json": "^11.0.0",
-        "npm": "^10.2.0"
+        "json": "^11.0.0"
     },
     "devDependencies": {
         "ts-node": "^10.9.1",
@@ -29,13 +28,17 @@
     "license": "BSD-3-Clause",
     "main": "./application/application.ts",
     "name": "discord-bot-template",
+    "prettier": {
+        "tabWidth": 4
+    },
     "repository": {
         "type": "github",
         "url": "https://github.com/Olevenbaum/Discord-Bot-Template"
     },
     "scripts": {
         "resetApplicationCommands": "ts-node ./management/resetApplicationCommands.ts",
-        "start": "ts-node ."
+        "start": "ts-node .",
+        "watch": "tsc -w"
     },
     "type": "module",
     "version": "1.0"

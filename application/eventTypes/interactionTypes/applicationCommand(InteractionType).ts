@@ -7,20 +7,21 @@ import {
 } from "discord.js";
 import { SavedInteractionType } from "../../../declarations/types";
 
+// Define interaction type
 const interactionType: SavedInteractionType = {
     // Set interaction type
     type: InteractionType.ApplicationCommand,
 
-    // Handle interaction
+    // Handle application command interaction
     async execute(
         interaction:
             | ChatInputCommandInteraction
             | MessageContextMenuCommandInteraction
-            | UserContextMenuCommandInteraction
+            | UserContextMenuCommandInteraction,
     ) {
         // Search for application command type
-        const applicationCommandType = global.applicationCommandTypes.get(
-            interaction.commandType
+        const applicationCommandType = applicationCommandTypes.get(
+            interaction.commandType,
         );
 
         // Check if application command type was found
@@ -36,8 +37,14 @@ const interactionType: SavedInteractionType = {
             // Print error
             console.error(
                 "[ERROR]:",
-                `No application command type file for application command type '${interaction.commandType}' was found`
+                `Unable to find application command type matching '${interaction.commandType}' in global variable`,
             );
+
+            // Send error message
+            await interaction.reply({
+                content: `There was an error handling the interaction \`\`${interaction.commandType}\`\`!`,
+                ephemeral: true,
+            });
         }
     },
 };

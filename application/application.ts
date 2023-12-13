@@ -12,7 +12,10 @@ import {
 import { SavedEventType } from "../declarations/types";
 
 // Import configuration data
-import { applications, applicationIteration } from "../configuration.json";
+import {
+    applications,
+    enableApplicationIteration,
+} from "../configuration.json";
 
 // Create new client
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -20,16 +23,13 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 // Print information
 console.info("[INFORMATION]:", "Defining functions...");
 
-// Execute script for defining functions
+// Execute script to define global functions
 require("./defineFunctions.ts");
 
 // Print information
-console.info(
-    "[INFORMATION]:",
-    "Reading files and adding them to their collections..."
-);
+console.info("[INFORMATION]:", "Reading files...");
 
-// Execute script for reading files
+// Execute script to read files
 require("./readFiles.ts");
 
 // Print information
@@ -46,17 +46,16 @@ const eventTypeFileNames = fs
 // Iterate over event type files
 eventTypeFileNames.forEach((eventTypeFileName) => {
     // Read event
-    const eventType: SavedEventType = require(path.join(
-        eventTypesPath,
-        eventTypeFileName
-    ));
+    const eventType: SavedEventType = require(
+        path.join(eventTypesPath, eventTypeFileName),
+    );
 
     // Check whether event type is called once
     if (eventType.once) {
-        // Add once eventlistener
+        // Add once event listener
         client.once(eventType.type, (...args) => eventType.execute(...args));
     } else {
-        // Add eventlistener
+        // Add event listener
         client.on(eventType.type, (...args) => eventType.execute(...args));
     }
 });
@@ -66,7 +65,7 @@ console.info("[INFORMATION]:", "Logging in bot application at Discord...");
 
 // Search for argument of process
 const argumentIndex: number | undefined = process.argv.findIndex((argument) =>
-    argument.startsWith("-application")
+    argument.startsWith("-application"),
 );
 
 // Define tokens array
@@ -82,33 +81,42 @@ if (argumentIndex && !isNaN(parseInt(process.argv[argumentIndex + 1] || "0"))) {
 tokens.asynchronousFind(async (token) => {
     // Check if token could be valid
     if (token && token.length > 0) {
-        // Try to login application
+        // Try to log in application
         return await client
             .login(token)
-            .then(() => {
+            .then((returnedToken) => {
                 // Return true
-                return true;
+                return token === returnedToken;
             })
-            .catch((error: DiscordAPIError) => {
+            .catch((error: Error) => {
                 // Check if error is caused by wrong token
-                if (error.code === "TokenInvalid") {
+                if (
+                    error instanceof DiscordAPIError &&
+                    isFromType<OAuthErrorData>(error.rawError, [
+                        "error",
+                        "error_description",
+                    ])
+                ) {
                     // Print warning
                     console.warn(
                         "[WARNING]:",
-                        "Token was not accepted by Discord"
+                        "Token was not accepted by Discord",
                     );
+
+                    // Return value based on application iteration
+                    return enableApplicationIteration;
                 } else {
                     // Print error
                     console.error("[ERROR]:", error);
-                }
 
-                // Return value based on application iteration
-                return applicationIteration;
+                    // Return false
+                    return false;
+                }
             });
     }
     // Print warning
     console.warn("[WARNING]:", "Token does not meet the requirements");
 
     // Return value based on application iteration
-    return applicationIteration;
+    return enableApplicationIteration;
 });

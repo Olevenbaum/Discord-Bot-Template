@@ -4,52 +4,43 @@ import { SavedApplicationCommandType } from "../../../../../declarations/types";
 
 // Define application command type
 const applicationCommandType: SavedApplicationCommandType = {
-    // Define application command type
+    // Set application command type
     type:
         ApplicationCommandType.ChatInput ||
         ApplicationCommandType.Message ||
         ApplicationCommandType.User,
 
-    // Handle interaction
+    // Handle application command interaction
     async execute(interaction) {
         // Search for application command
-        const applicationCommand = global.applicationCommands
+        const applicationCommand = applicationCommands
             .filter(
-                (applicationCommand) => applicationCommand.type === this.type
+                (applicationCommand) => applicationCommand.type === this.type,
             )
             .get(interaction.commandName);
 
-        // Check if application command was found
-        if (applicationCommand) {
-            // Try to execute application command specific function
-            await applicationCommand
-                .execute(interaction)
-                .catch((error: Error) => {
-                    // Printint error
-                    console.error("[ERROR]:", error);
+        // Try to execute application command specific function
+        await applicationCommand
+            .execute(interaction)
+            .catch(async (error: Error) => {
+                // Print error
+                console.error("[ERROR]:", error);
 
-                    // Check if application command interaction was acknowledged
-                    if (interaction.replied || interaction.deferred) {
-                        // Send follow up message
-                        interaction.followUp({
-                            content: `There was an error while executing the application command \`\`${interaction.commandName}\`\`!`,
-                            ephemeral: true,
-                        });
-                    }
-                });
-        } else {
-            // Reply to interaction
-            interaction.reply({
-                content: `The application command \`\`${interaction.commandName}\`\` could not be found!`,
-                ephemeral: true,
+                // Check if application command interaction was acknowledged
+                if (interaction.replied || interaction.deferred) {
+                    // Send follow-up message
+                    await interaction.followUp({
+                        content: `There was an error executing the application command \`\`${interaction.commandName}\`\`!`,
+                        ephemeral: true,
+                    });
+                } else {
+                    // Send error message
+                    await interaction.reply({
+                        content: `There was an error executing the chat input command \`\`${interaction.commandName}\`\`!`,
+                        ephemeral: true,
+                    });
+                }
             });
-
-            // Print error
-            console.error(
-                "[ERROR]:",
-                `No application command matching '${interaction.commandName}' was found`
-            );
-        }
     },
 };
 
