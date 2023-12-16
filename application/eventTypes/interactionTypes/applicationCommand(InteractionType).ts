@@ -30,21 +30,15 @@ const interactionType: SavedInteractionType = {
             await applicationCommandType
                 .execute(interaction)
                 .catch((error: Error) => {
-                    // Print error
-                    console.error("[ERROR]:", error);
+                    // Send notifications
+                    sendNotification("error", error);
                 });
         } else {
-            // Print error
-            console.error(
-                "[ERROR]:",
+            // Send notification
+            sendNotification(
+                "error",
                 `Unable to find application command type matching '${interaction.commandType}' in global variable`,
             );
-
-            // Send error message
-            await interaction.reply({
-                content: `There was an error handling the interaction \`\`${interaction.commandType}\`\`!`,
-                ephemeral: true,
-            });
         }
     },
 };

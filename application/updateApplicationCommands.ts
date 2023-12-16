@@ -3,6 +3,12 @@ import { ApplicationCommand, Client, Collection, Routes } from "discord.js";
 
 // Export module
 module.exports = async (client: Client) => {
+    // Check if client is ready
+    if (!client.isReady()) {
+        // Return
+        return;
+    }
+
     // Define registered application commands collection
     const registeredApplicationCommands: Collection<
         string,
@@ -11,7 +17,7 @@ module.exports = async (client: Client) => {
 
     // Request registered application commands from Discord
     const rawRegisteredApplicationCommands = (await client.rest.get(
-        Routes.applicationCommands(client.application?.id),
+        Routes.applicationCommands(client.application.id),
     )) as ApplicationCommand[];
 
     // Add registered application commands to collection
@@ -39,21 +45,21 @@ module.exports = async (client: Client) => {
                 promises.push(
                     client.rest
                         .post(
-                            Routes.applicationCommands(client.application?.id),
+                            Routes.applicationCommands(client.application.id),
                             {
                                 body: savedApplicationCommand,
                             },
                         )
                         .then(() => {
-                            // Print information
-                            console.info(
-                                "[INFORMATION]:",
+                            // Send notifications
+                            sendNotification(
+                                "information",
                                 `Successfully registered new application command '${savedApplicationCommandName}'`,
                             );
                         })
                         .catch((error: Error) =>
-                            // Print error
-                            console.error("[ERROR]:", error),
+                            // Send notifications
+                            sendNotification("error", error),
                         ),
                 );
             } else if (
@@ -67,7 +73,7 @@ module.exports = async (client: Client) => {
                     client.rest
                         .patch(
                             Routes.applicationCommand(
-                                client.application?.id,
+                                client.application.id,
                                 registeredApplicationCommand.id,
                             ),
                             {
@@ -75,15 +81,15 @@ module.exports = async (client: Client) => {
                             },
                         )
                         .then(() => {
-                            // Print information
-                            console.info(
-                                "[INFORMATION]:",
+                            // Send notifications
+                            sendNotification(
+                                "information",
                                 `Successfully updated application command ${savedApplicationCommandName}`,
                             );
                         })
                         .catch((error: Error) =>
-                            // Print error
-                            console.error("[ERROR]:", error),
+                            // Send notifications
+                            sendNotification("error", error),
                         ),
                 );
             }
@@ -100,20 +106,20 @@ module.exports = async (client: Client) => {
                     client.rest
                         .delete(
                             Routes.applicationCommand(
-                                client.application?.id,
+                                client.application.id,
                                 registeredApplicationCommand.id,
                             ),
                         )
                         .then(() => {
-                            // Print information
-                            console.info(
-                                "[INFORMATION]:",
+                            // Send notificaionts
+                            sendNotification(
+                                "information",
                                 `Successfully deleted application command ${registeredApplicationCommandName}`,
                             );
                         })
                         .catch((error: Error) =>
-                            // Print error
-                            console.error("[ERROR]:", error),
+                            // Send notifications
+                            sendNotification("error", error),
                         ),
                 );
             }
@@ -122,22 +128,22 @@ module.exports = async (client: Client) => {
 
     // Execute promises
     await Promise.all(promises).catch((error: Error) =>
-        // Print error
-        console.error("[ERROR]:", error),
+        // Send notifications
+        sendNotification("error", error),
     );
 
     // Check if any application commands were added, deleted or updated
     if (promises.length > 0) {
-        // Print information
-        console.info(
-            "[INFORMATION]:",
-            `Successfully updated all application commands`,
+        // Send notifications
+        sendNotification(
+            "information",
+            "Successfully updated all application commands",
         );
     } else {
-        // Print information
-        console.info(
-            "[INFORMATION]:",
-            `No commands to be updated, deleted or added were found`,
+        // Send notifications
+        sendNotification(
+            "information",
+            "No commands to be updated, deleted or added were found",
         );
     }
 };

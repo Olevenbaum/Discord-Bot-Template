@@ -14,11 +14,12 @@
         "json": "^11.0.0"
     },
     "devDependencies": {
+        "@tsconfig/node20": "^20.1.2",
         "ts-node": "^10.9.1",
         "typescript": "^5.3.2"
     },
     "homepage": "https://github.com/Olevenbaum/Discord-Bot-Template",
-    "icon": "./resources/images/profilepicture.png",
+    "icon": "resources/images/profilepicture.png",
     "keywords": [
         "bot",
         "discord",
@@ -26,7 +27,7 @@
         "template"
     ],
     "license": "BSD-3-Clause",
-    "main": "./application/application.ts",
+    "main": "application/application.ts",
     "name": "discord-bot-template",
     "prettier": {
         "tabWidth": 4
@@ -36,8 +37,8 @@
         "url": "https://github.com/Olevenbaum/Discord-Bot-Template"
     },
     "scripts": {
-        "resetApplicationCommands": "ts-node ./management/resetApplicationCommands.ts",
-        "start": "ts-node .",
+        "resetApplicationCommands": "node management/resetApplicationCommands.ts",
+        "start": "node application/application.js",
         "watch": "tsc -w"
     },
     "type": "module",

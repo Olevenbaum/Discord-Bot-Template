@@ -12,28 +12,25 @@ import {
 import { SavedEventType } from "../declarations/types";
 
 // Import configuration data
-import {
-    applications,
-    enableApplicationIteration,
-} from "../configuration.json";
+import configuration from "configuration.json";
 
 // Create new client
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-// Print information
-console.info("[INFORMATION]:", "Defining functions...");
+// Send notifications
+sendNotification("information", "Defining functions...");
 
 // Execute script to define global functions
 require("./defineFunctions.ts");
 
-// Print information
-console.info("[INFORMATION]:", "Reading files...");
+// Send notifications
+sendNotification("information", "Reading files...");
 
 // Execute script to read files
 require("./readFiles.ts");
 
-// Print information
-console.info("[INFORMATION]:", "Creating event listeners...");
+// Send notifications
+sendNotification("information", "Creating event listeners...");
 
 // Define event types path
 const eventTypesPath = path.join(__dirname, "./eventTypes");
@@ -60,8 +57,8 @@ eventTypeFileNames.forEach((eventTypeFileName) => {
     }
 });
 
-// Print information
-console.info("[INFORMATION]:", "Logging in bot application at Discord...");
+// Send notifications
+sendNotification("information", "Logging in bot application at Discord...");
 
 // Search for argument of process
 const argumentIndex: number | undefined = process.argv.findIndex((argument) =>
@@ -69,7 +66,7 @@ const argumentIndex: number | undefined = process.argv.findIndex((argument) =>
 );
 
 // Define tokens array
-const tokens = applications.map(({ token }) => token);
+const tokens = configuration.applications.map(({ token }) => token);
 
 // Check if argument for different token was provided
 if (argumentIndex && !isNaN(parseInt(process.argv[argumentIndex + 1] || "0"))) {
@@ -97,14 +94,14 @@ tokens.asynchronousFind(async (token) => {
                         "error_description",
                     ])
                 ) {
-                    // Print warning
-                    console.warn(
-                        "[WARNING]:",
+                    // Send notifications
+                    sendNotification(
+                        "warning",
                         "Token was not accepted by Discord",
                     );
 
                     // Return value based on application iteration
-                    return enableApplicationIteration;
+                    return configuration.enableApplicationIteration;
                 } else {
                     // Print error
                     console.error("[ERROR]:", error);
@@ -114,9 +111,9 @@ tokens.asynchronousFind(async (token) => {
                 }
             });
     }
-    // Print warning
-    console.warn("[WARNING]:", "Token does not meet the requirements");
+    // Send notifications
+    sendNotification("warning", "Token does not meet the requirements");
 
     // Return value based on application iteration
-    return enableApplicationIteration;
+    return configuration.enableApplicationIteration;
 });

@@ -29,8 +29,8 @@ const interactionType: SavedInteractionType = {
         await chatInputCommand
             .autocomplete(interaction)
             .catch(async (error) => {
-                // Print error
-                console.error("[ERROR]:", error);
+                // Send notifications
+                sendNotification("error", error);
             });
     },
 };

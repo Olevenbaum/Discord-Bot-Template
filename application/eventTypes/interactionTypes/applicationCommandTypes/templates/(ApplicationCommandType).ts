@@ -23,23 +23,13 @@ const applicationCommandType: SavedApplicationCommandType = {
         await applicationCommand
             .execute(interaction)
             .catch(async (error: Error) => {
-                // Print error
-                console.error("[ERROR]:", error);
-
-                // Check if application command interaction was acknowledged
-                if (interaction.replied || interaction.deferred) {
-                    // Send follow-up message
-                    await interaction.followUp({
-                        content: `There was an error executing the application command \`\`${interaction.commandName}\`\`!`,
-                        ephemeral: true,
-                    });
-                } else {
-                    // Send error message
-                    await interaction.reply({
-                        content: `There was an error executing the chat input command \`\`${interaction.commandName}\`\`!`,
-                        ephemeral: true,
-                    });
-                }
+                // Send notifications
+                sendNotification(
+                    "error",
+                    error,
+                    `There was an error executing the application command \`\`${interaction.commandName}\`\`!`,
+                    interaction,
+                );
             });
     },
 };

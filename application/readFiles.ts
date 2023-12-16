@@ -11,8 +11,8 @@ import {
 
 // Export module
 module.exports = () => {
-    // Print information
-    console.info("[INFORMATION]:", "Creating interaction types collection...");
+    // Send notifications
+    sendNotification("information", "Creating interaction types collection...");
 
     // Define interaction types path
     const interactionTypesPath = path.join(__dirname, "./interactionTypes");
@@ -35,9 +35,9 @@ module.exports = () => {
         interactionTypes.set(interactionType.type, interactionType);
     });
 
-    // Print information
-    console.info(
-        "[INFORMATION]:",
+    // Send notifications
+    sendNotification(
+        "information",
         "Creating application command types collection...",
     );
 
@@ -73,9 +73,9 @@ module.exports = () => {
         },
     );
 
-    // Print information
-    console.info(
-        "[INFORMATION]:",
+    // Send notifications
+    sendNotification(
+        "information",
         "Creating application commands collection...",
     );
 
@@ -105,6 +105,9 @@ module.exports = () => {
             applicationCommand,
         );
     });
+
+    // Send notifications
+    sendNotification("information", "Importing blocked users...");
 
     // Import blocked users
     blockedUsers.push(require("../resources/blockedUsers.json"));

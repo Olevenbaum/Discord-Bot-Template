@@ -3,7 +3,7 @@ import { Events, Interaction, InteractionType } from "discord.js";
 import { SavedEventType } from "../../declarations/types";
 
 // Import configuration data
-import { enableBlockedUsers } from "../../configuration.json";
+import configuration from "configuration.json";
 
 // Define event type
 const eventType: SavedEventType = {
@@ -15,7 +15,7 @@ const eventType: SavedEventType = {
     async execute(interaction: Interaction) {
         // Check if user is allowed to interact with bot
         if (
-            enableBlockedUsers &&
+            configuration.enableBlockedUsers &&
             blockedUsers.includes(interaction.user.id) &&
             interaction.type !== InteractionType.ApplicationCommandAutocomplete
         ) {
@@ -34,39 +34,20 @@ const eventType: SavedEventType = {
                 await interactionType
                     .execute(interaction)
                     .catch((error: Error) => {
-                        // Check if interaction type is chat input command autocomplete
-                        if (
-                            interaction.type !==
-                            InteractionType.ApplicationCommandAutocomplete
-                        ) {
-                            // Reply to interaction
-                            interaction.reply({
-                                ephemeral: true,
-                                content: `There was an error handling the interaction '${interaction.type}'!`,
-                            });
-                        }
-
-                        // Print error
-                        console.error("[ERROR]:", error);
+                        // Send notifications
+                        sendNotification(
+                            "error",
+                            error,
+                            `There was an error handling the interaction '${interaction.type}'!`,
+                            interaction,
+                        );
                     });
             } else {
-                // Print error
-                console.error(
-                    "[ERROR]:",
+                // Send notifications
+                sendNotification(
+                    "error",
                     `Unable to find interaction type matching ${interaction.type} in global variable`,
                 );
-
-                // Check if interaction type is chat input command autocomplete
-                if (
-                    interaction.type !==
-                    InteractionType.ApplicationCommandAutocomplete
-                ) {
-                    // Reply to interaction
-                    interaction.reply({
-                        ephemeral: true,
-                        content: "Your interaction could not be resolved!",
-                    });
-                }
             }
         }
     },

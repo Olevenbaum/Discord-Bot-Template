@@ -2,7 +2,13 @@
 import {
     ApplicationCommandOption,
     ApplicationCommandOptionType,
+    Interaction,
+    Team,
+    User,
 } from "discord.js";
+
+// Import configuration data
+import configuration from "configuration.json";
 
 //Export module
 module.exports = () => {
@@ -69,7 +75,7 @@ module.exports = () => {
         };
 
         // Add application command type to saved application command data
-        savedApplicationCommand.data["type"] = savedApplicationCommand.type;
+        savedApplicationCommand.data.type = savedApplicationCommand.type;
 
         // Search and sort common keys
         const commonKeys = Object.keys(savedApplicationCommand.data)
@@ -81,7 +87,7 @@ module.exports = () => {
             commonKeys.map((key) => {
                 // Check for specific keys
                 switch (key) {
-                    case "description_localizations" || "name_localizations":
+                    case "descriptionLocalizations" || "nameLocalizations":
                         // Define entry
                         const entry = registeredApplicationCommand[key];
 
@@ -110,26 +116,12 @@ module.exports = () => {
             }),
         );
 
-        global.isFromType = function <Type>(
-            object: any,
-            keys: (keyof Type)[],
-        ): object is Type {
-            // Check if object and keys of type exist
-            if (!(object && Array.isArray(keys))) {
-                // Return false
-                return false;
-            }
-
-            // Return whether object includes all keys of type
-            return keys.reduce((impl, key) => impl && key in object, true);
-        };
-
         // Overwrite saved application command
         const overwrittenSavedApplicationCommand = Object.fromEntries(
             commonKeys.map((key) => {
                 // Check for specific keys
                 switch (key) {
-                    case "description_localizations" || "name_localizations":
+                    case "descriptionLocalizations" || "nameLocalizations":
                         // Define entry
                         const entry = savedApplicationCommand.data[key];
 
@@ -166,6 +158,128 @@ module.exports = () => {
             JSON.stringify(overwrittenRegisteredApplicationCommand) ===
             JSON.stringify(overwrittenSavedApplicationCommand)
         );
+    };
+
+    global.isFromType = function <Type>(
+        object: any,
+        keys: (keyof Type)[],
+    ): object is Type {
+        // Check if object and keys of type exist
+        if (!(object && Array.isArray(keys))) {
+            // Return false
+            return false;
+        }
+
+        // Return whether object includes all keys of type
+        return keys.reduce((impl, key) => impl && key in object, true);
+    };
+
+    // Define function to send notification to one or multiple users and print to the console
+    global.sendNotification = async function (
+        type: "error" | "information" | "warning",
+        content: string | Error,
+        message: string = typeof content === "string"
+            ? content
+            : "An error occurred!",
+        interaction?: Interaction,
+        sendToInteractionCreator: boolean = typeof configuration.notifications !==
+        "boolean"
+            ? configuration.notifications.defaultSendToInteractionCreator ??
+              true
+            : true,
+    ) {
+        // Check which type of notification should be printed
+        switch (type) {
+            case "error":
+                // Print error
+                console.error("[ERROR]:", content);
+
+                // Break
+                break;
+
+            case "information":
+                // Print information
+                console.info("[INFORMATION]:", content);
+
+                // Break
+                break;
+
+            case "warning":
+                // Print warning
+                console.warn("[WARNING]:", content);
+
+                // Break
+                break;
+        }
+
+        // Check if message should be sent to interaction creator
+        if (
+            interaction &&
+            sendToInteractionCreator &&
+            !interaction.isAutocomplete()
+        ) {
+            // Check if application command interaction was acknowledged
+            if (interaction.replied || interaction.deferred) {
+                // Send follow-up error message
+                await interaction.followUp({
+                    content: message,
+                    ephemeral: true,
+                });
+            } else {
+                // Send error message
+                await interaction.reply({
+                    content: message,
+                    ephemeral: true,
+                });
+            }
+        }
+
+        // Check if notifications are enabled (for this type)
+        if (configuration.notifications) {
+            // Save notifications as own variable
+            const notifications = configuration.notifications;
+
+            // Check if notification type should be sent
+            if (
+                typeof notifications === "boolean" ||
+                !("notificationType" in notifications) ||
+                type in notifications.notificationType
+            ) {
+                // Save owner of bot
+                const owner: User | Team = interaction.client.application.owner;
+
+                // Send message to owner
+                await (owner instanceof User ? owner : owner.owner.user).send(
+                    message,
+                );
+
+                // Check if team members should receive notifications
+                if (
+                    owner instanceof Team &&
+                    (typeof notifications === "boolean" ||
+                        ("enableTeamNotifications" in notifications &&
+                            notifications.enableTeamNotifications))
+                ) {
+                    // Iterate over team members
+                    for (const [teamMemberId, teamMember] of owner.members) {
+                        // Check if team member wants to receive messages
+                        if (
+                            typeof notifications !== "boolean" &&
+                            (typeof notifications.teamNotifications ===
+                                "boolean" ||
+                                ("excludeMembers" in
+                                    notifications.teamNotifications &&
+                                    !notifications.teamNotifications.excludeMembers.includes(
+                                        teamMemberId,
+                                    )))
+                        ) {
+                            // Send message to team member
+                            await teamMember.user.send(message);
+                        }
+                    }
+                }
+            }
+        }
     };
 
     // Define function for transform application command options
@@ -282,8 +396,8 @@ module.exports = () => {
                                     ),
                                 ];
 
-                            case "description_localizations" ||
-                                "name_localizations":
+                            case "descriptionLocalizations" ||
+                                "nameLocalizations":
                                 // Define entry
                                 const entry: {
                                     [key: string]: string;

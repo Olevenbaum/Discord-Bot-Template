@@ -4,6 +4,7 @@ import {
     ApplicationCommandOption,
     ApplicationCommandType,
     Collection,
+    Interaction,
     InteractionType,
 } from "discord.js";
 import {
@@ -12,7 +13,7 @@ import {
     SavedInteractionType,
 } from "./types";
 
-// Declare global variables
+// Declare global functions and variables
 declare global {
     // Collection to save all application commands
     const applicationCommands: Collection<string, SavedApplicationCommand>;
@@ -40,6 +41,15 @@ declare global {
         object: any,
         keys: (keyof Type)[],
     ): object is Type;
+
+    // Function to print to console and send helpful messages to owner(s)
+    function sendNotification(
+        type: "error" | "information" | "warning",
+        content: string | Error,
+        message?: string,
+        interaction?: Interaction,
+        sendToInteractionCreator?: boolean,
+    ): void;
 
     // Function to transform application command options
     function transformApplicationCommandOptions(
