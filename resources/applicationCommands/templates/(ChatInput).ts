@@ -3,7 +3,7 @@ import { ApplicationCommandType, SlashCommandBuilder } from "discord.js";
 import { SavedChatInputCommand } from "../../../declarations/types";
 
 // Define chat input command
-const chatInputCommand: SavedChatInputCommand = {
+export const chatInputCommand: SavedChatInputCommand = {
     // Set chat input command information and type
     data: new SlashCommandBuilder().setDescription("").setName("").setNSFW(),
     type: ApplicationCommandType.ChatInput,
@@ -14,6 +14,3 @@ const chatInputCommand: SavedChatInputCommand = {
     // Handle chat input command response
     async execute(interaction) {},
 };
-
-// Export chat input command
-export default chatInputCommand;

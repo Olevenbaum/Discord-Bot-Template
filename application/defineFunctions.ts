@@ -10,8 +10,8 @@ import {
 // Import configuration data
 import configuration from "configuration.json";
 
-//Export module
-module.exports = () => {
+//Export lambda function
+export default () => {
     // Define asynchronous prototype find function for array
     Array.prototype.asynchronousFind = async function <Element>(
         predicate: (

@@ -9,7 +9,7 @@ import {
 } from "../../../../declarations/types";
 
 // Define application command type
-const applicationCommandType: SavedApplicationCommandType = {
+export const applicationCommandType: SavedApplicationCommandType = {
     // Set application command type
     type: ApplicationCommandType.Message,
 
@@ -34,6 +34,3 @@ const applicationCommandType: SavedApplicationCommandType = {
         });
     },
 };
-
-// Export application command type
-export default applicationCommandType;

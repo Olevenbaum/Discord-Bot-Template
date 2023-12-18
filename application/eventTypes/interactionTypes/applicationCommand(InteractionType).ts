@@ -8,7 +8,7 @@ import {
 import { SavedInteractionType } from "../../../declarations/types";
 
 // Define interaction type
-const interactionType: SavedInteractionType = {
+export const interactionType: SavedInteractionType = {
     // Set interaction type
     type: InteractionType.ApplicationCommand,
 
@@ -42,6 +42,3 @@ const interactionType: SavedInteractionType = {
         }
     },
 };
-
-// Export interaction type
-export default interactionType;

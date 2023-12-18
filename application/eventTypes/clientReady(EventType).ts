@@ -3,7 +3,7 @@ import { Client, Events } from "discord.js";
 import { SavedEventType } from "../../declarations/types";
 
 // Define event type
-const eventType: SavedEventType = {
+export const eventType: SavedEventType = {
     // Set event kind and type
     once: true,
     type: Events.ClientReady,
@@ -24,6 +24,3 @@ const eventType: SavedEventType = {
         }
     },
 };
-
-// Export event type
-export default eventType;

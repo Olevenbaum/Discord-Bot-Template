@@ -10,7 +10,7 @@ import {
 } from "../../../declarations/types";
 
 // Define interaction type
-const interactionType: SavedInteractionType = {
+export const interactionType: SavedInteractionType = {
     // Set interaction type
     type: InteractionType.ApplicationCommandAutocomplete,
 
@@ -34,6 +34,3 @@ const interactionType: SavedInteractionType = {
             });
     },
 };
-
-// Export interaction type
-export default interactionType;

@@ -3,7 +3,7 @@ import { InteractionType } from "discord.js";
 import { SavedInteractionType } from "../../../../declarations/types";
 
 // Define interaction type
-const interactionType: SavedInteractionType = {
+export const interactionType: SavedInteractionType = {
     // Set interaction type
     type:
         InteractionType.ApplicationCommand ||
@@ -15,6 +15,3 @@ const interactionType: SavedInteractionType = {
     // Handle interaction
     async execute(interaction) {},
 };
-
-// Export interaction type
-export default interactionType;

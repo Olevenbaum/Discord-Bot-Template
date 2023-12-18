@@ -1,8 +1,8 @@
 // Import types
 import { ApplicationCommand, Client, Collection, Routes } from "discord.js";
 
-// Export module
-module.exports = async (client: Client) => {
+// Export lambda function
+export default async (client: Client) => {
     // Check if client is ready
     if (!client.isReady()) {
         // Return
@@ -63,7 +63,7 @@ module.exports = async (client: Client) => {
                         ),
                 );
             } else if (
-                !global.compareApplicationCommands(
+                !compareApplicationCommands(
                     registeredApplicationCommand,
                     savedApplicationCommand,
                 )
@@ -111,7 +111,7 @@ module.exports = async (client: Client) => {
                             ),
                         )
                         .then(() => {
-                            // Send notificaionts
+                            // Send notifications
                             sendNotification(
                                 "information",
                                 `Successfully deleted application command ${registeredApplicationCommandName}`,

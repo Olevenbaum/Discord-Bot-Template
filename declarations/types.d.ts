@@ -50,6 +50,8 @@ interface SavedApplicationCommandType {
 interface SavedChatInputCommand extends SavedApplicationCommand {
     // Data of the chat input command
     data: SlashCommandBuilder;
+    // Type of the chat input command
+    type: ApplicationCommandType.ChatInput;
 
     // Function to be executed on chat input command autocomplete interaction
     autocomplete(interaction: AutocompleteInteraction): Promise<void>;
@@ -84,6 +86,9 @@ interface SavedMessageCommand extends SavedApplicationCommand {
     // Data of the message command
     data: ContextMenuCommandBuilder;
 
+    // Type of the message command
+    type: ApplicationCommandType.Message;
+
     // Function to be executed on message command interaction
     execute(interaction: MessageContextMenuCommandInteraction): Promise<void>;
 }
@@ -92,6 +97,9 @@ interface SavedMessageCommand extends SavedApplicationCommand {
 interface SavedUserCommand extends SavedApplicationCommand {
     // Data of the user command
     data: ContextMenuCommandBuilder;
+
+    // Type of the user command
+    type: ApplicationCommandType.User;
 
     // Function to be executed on user command interaction
     execute(interaction: UserContextMenuCommandInteraction): Promise<void>;

@@ -3,7 +3,7 @@ import { Events } from "discord.js";
 import { SavedEventType } from "../../../declarations/types";
 
 // Define event type
-const eventType: SavedEventType = {
+export const eventType: SavedEventType = {
     // Set event kind and type
     once: false,
     type:
@@ -80,6 +80,3 @@ const eventType: SavedEventType = {
     // Handle event
     async execute(interaction) {},
 };
-
-// Export event type
-export default eventType;

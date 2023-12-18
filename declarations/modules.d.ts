@@ -29,12 +29,12 @@ interface Notifications {
 
 // Interface for team notifications
 interface TeamNotifications {
-    // Array of the excluded team members who do not want or should not to receive messages
+    // Array of the excluded team members who do not want to or should not receive messages
     excludeMembers?: string[];
 }
 
 // Module to export configuration data
 declare module "configuration.json" {
-    const value: Configuration;
-    export default value;
+    const configuration: Configuration;
+    export default configuration;
 }

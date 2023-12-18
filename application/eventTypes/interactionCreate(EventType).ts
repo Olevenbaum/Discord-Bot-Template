@@ -6,7 +6,7 @@ import { SavedEventType } from "../../declarations/types";
 import configuration from "configuration.json";
 
 // Define event type
-const eventType: SavedEventType = {
+export const eventType: SavedEventType = {
     // Set event kind and type
     once: false,
     type: Events.InteractionCreate,

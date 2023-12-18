@@ -9,8 +9,8 @@ import {
     SavedInteractionType,
 } from "../declarations/types";
 
-// Export module
-module.exports = () => {
+// Export lambda function
+export default () => {
     // Send notifications
     sendNotification("information", "Creating interaction types collection...");
 
