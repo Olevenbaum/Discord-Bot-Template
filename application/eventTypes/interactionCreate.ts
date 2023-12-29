@@ -1,49 +1,62 @@
-// Import types
+// Type imports
 import { Events, Interaction, InteractionType } from "discord.js";
 import { SavedEventType } from "../../declarations/types";
 
-// Import configuration data
+// Configuration data import
 import configuration from "configuration.json";
 
-// Define event type
+/**
+ * Interaction event handler
+ */
 export const eventType: SavedEventType = {
-    // Set event kind and type
     once: false,
     type: Events.InteractionCreate,
 
-    // Handle event
     async execute(interaction: Interaction) {
         // Check if user is allowed to interact with bot
         if (
-            configuration.enableBlockedUsers &&
-            blockedUsers.includes(interaction.user.id) &&
-            interaction.type !== InteractionType.ApplicationCommandAutocomplete
+            interaction.type !==
+                InteractionType.ApplicationCommandAutocomplete &&
+            ((configuration.enableBlockedUsers &&
+                blockedUsers.includes(interaction.user.id)) ||
+                (!configuration.enableBotInteraction && interaction.user.bot))
         ) {
-            // Reply to interaction
-            interaction.reply({
-                ephemeral: true,
-                content: "You are not allowed to interact with this bot!",
-            });
+            // TODO: Better notification system
+            // Send notifications
+            sendNotification(
+                "warning",
+                `The ${
+                    (interaction.user.bot
+                        ? "bot"
+                        : "user, who is currently blocked from using your bot,") +
+                    interaction.user.username
+                } tried to interact with your bot`,
+            );
         } else {
-            // Search for interaction type
+            /**
+             * Interaction type handler matching the interaction type
+             */
             const interactionType = interactionTypes.get(interaction.type);
 
             // Check if interaction type was found
             if (interactionType) {
-                // Try to execute interaction type specific function
+                // Try to forward interaction response prompt
                 await interactionType
                     .execute(interaction)
                     .catch((error: Error) => {
-                        // Send notifications
+                        // TODO: Better notification system
+                        // Send notification
                         sendNotification(
                             "error",
                             error,
                             `There was an error handling the interaction '${interaction.type}'!`,
                             interaction,
+                            true,
                         );
                     });
             } else {
-                // Send notifications
+                // TODO: Better notification system
+                // Send notification
                 sendNotification(
                     "error",
                     `Unable to find interaction type matching ${interaction.type} in global variable`,
@@ -52,6 +65,3 @@ export const eventType: SavedEventType = {
         }
     },
 };
-
-// Export event type
-export default eventType;

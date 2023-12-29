@@ -1,20 +1,21 @@
-// Import types
+// Type imports
 import { Client, Events } from "discord.js";
 import { SavedEventType } from "../../declarations/types";
 
-// Define event type
+/**
+ * Client ready event handler
+ */
 export const eventType: SavedEventType = {
-    // Set event kind and type
     once: true,
     type: Events.ClientReady,
 
-    // Handle event
     async execute(client: Client) {
         // Update registered application commands
         await require("../updateApplicationCommands.ts")(client);
 
         // Check if client is ready
         if (client.isReady()) {
+            // TODO: Better notification system
             // Send notifications
             sendNotification(
                 "information",

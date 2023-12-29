@@ -1,4 +1,4 @@
-// Import types
+// Type imports
 import {
     ApplicationCommandType,
     AutocompleteInteraction,
@@ -9,14 +9,16 @@ import {
     SavedInteractionType,
 } from "../../../declarations/types";
 
-// Define interaction type
-export const interactionType: SavedInteractionType = {
-    // Set interaction type
+/**
+ * Chat input command autocomplete interaction handler
+ */
+export const applicationCommandAutocompleteInteraction: SavedInteractionType = {
     type: InteractionType.ApplicationCommandAutocomplete,
 
-    // Handle application command autocomplete interaction
     async execute(interaction: AutocompleteInteraction) {
-        // Search for chat input command
+        /**
+         * Chat input command that the autocomplete was requested for
+         */
         const chatInputCommand = applicationCommands
             .filter(
                 (applicationCommand) =>
@@ -25,10 +27,11 @@ export const interactionType: SavedInteractionType = {
             )
             .get(interaction.commandName) as SavedChatInputCommand; // TODO: Fix type
 
-        // Try to execute chat input command specific function
+        // Try to forward chat input command autocomplete interaction response prompt
         await chatInputCommand
             .autocomplete(interaction)
             .catch(async (error) => {
+                // TODO: Better notification system
                 // Send notifications
                 sendNotification("error", error);
             });

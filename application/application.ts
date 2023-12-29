@@ -1,8 +1,8 @@
-// Import modules
+// Module imports
 import fs from "node:fs";
 import path from "node:path";
 
-// Import types
+// Type imports
 import {
     Client,
     DiscordAPIError,
@@ -11,38 +11,49 @@ import {
 } from "discord.js";
 import { SavedEventType } from "../declarations/types";
 
-// Import configuration data
+// Configuration data import
 import configuration from "configuration.json";
 
-// Create new client
+/**
+ * Client hosting the bot
+ */
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
+// TODO: Better notification system
 // Send notifications
-sendNotification("information", "Defining functions...");
+sendNotification("information", "Defining global functions...");
 
-// Execute script to define global functions
+// Define global functions
 require("./defineFunctions.ts");
 
+// TODO: Better notification system
 // Send notifications
 sendNotification("information", "Reading files...");
 
-// Execute script to read files
+// Read files
 require("./readFiles.ts");
 
+// TODO: Better notification system
 // Send notifications
 sendNotification("information", "Creating event listeners...");
 
-// Define event types path
+/**
+ * Path of locally saved event type files
+ */
 const eventTypesPath = path.join(__dirname, "./eventTypes");
 
-// Read event type filenames
+/**
+ * Event type file names of locally saved event types
+ */
 const eventTypeFileNames = fs
     .readdirSync(eventTypesPath)
     .filter((eventTypeFileName) => eventTypeFileName.endsWith(".ts"));
 
-// Iterate over event type files
+// Iterate over event type file names
 eventTypeFileNames.forEach((eventTypeFileName) => {
-    // Read event
+    /**
+     * Event type file
+     */
     const eventType: SavedEventType = require(
         path.join(eventTypesPath, eventTypeFileName),
     );
@@ -57,63 +68,93 @@ eventTypeFileNames.forEach((eventTypeFileName) => {
     }
 });
 
+// TODO: Better notification system
 // Send notifications
-sendNotification("information", "Logging in bot application at Discord...");
+sendNotification("information", "Logging in bot at Discord...");
 
-// Search for argument of process
-const argumentIndex: number | undefined = process.argv.findIndex((argument) =>
-    argument.startsWith("-application"),
-);
+// Check if multiple bots are provided
+if (Array.isArray(configuration.applications)) {
+    /**
+     * Index of provided bot index argument
+     */
+    const argumentIndex = process.argv.findIndex((argument) =>
+        argument.startsWith("-bot-index"),
+    );
 
-// Define tokens array
-const tokens = configuration.applications.map(({ token }) => token);
+    /**
+     * Provided index of bot to be started
+     */
+    const index = parseInt(process.argv[argumentIndex + 1] || "0");
 
-// Check if argument for different token was provided
-if (argumentIndex && !isNaN(parseInt(process.argv[argumentIndex + 1] || "0"))) {
-    // Rotate array
-    tokens.rotate(parseInt(process.argv[argumentIndex + 1] || "0") ?? null);
-}
+    /**
+     * Tokens of provided bots
+     */
+    const tokens = configuration.applications.map(({ token }) => token);
 
-// Iterate over application tokens
-tokens.asynchronousFind(async (token) => {
-    // Check if token could be valid
-    if (token && token.length > 0) {
-        // Try to log in application
-        return await client
-            .login(token)
-            .then((returnedToken) => {
-                // Return true
-                return token === returnedToken;
-            })
-            .catch((error: Error) => {
-                // Check if error is caused by wrong token
-                if (
-                    error instanceof DiscordAPIError &&
-                    isFromType<OAuthErrorData>(error.rawError, [
-                        "error",
-                        "error_description",
-                    ])
-                ) {
-                    // Send notifications
-                    sendNotification(
-                        "warning",
-                        "Token was not accepted by Discord",
-                    );
-
-                    // Return value based on application iteration
-                    return configuration.enableApplicationIteration;
-                } else {
-                    // Print error
-                    console.error("[ERROR]:", error);
-
-                    // Return false
-                    return false;
-                }
-            });
+    // Check if argument for different token was provided
+    if (argumentIndex !== -1) {
+        tokens.rotate(index);
     }
-    // Send notifications
-    sendNotification("warning", "Token does not meet the requirements");
 
-    // Return value based on application iteration
-    return configuration.enableApplicationIteration;
-});
+    // Try to log in bot at Discord
+    tokens
+        .asynchronousFind(async (token) => {
+            // Check if token could be valid
+            if (token && token.length > 0) {
+                // TODO: Check token length and format
+                // Return whether token was accepted by Discord
+                return await client
+                    .login(token)
+                    .then((returnedToken) => {
+                        // Return whether token was right
+                        return token === returnedToken;
+                    })
+                    .catch((error: Error) => {
+                        // Check if error is caused by wrong token
+                        if (
+                            error instanceof DiscordAPIError &&
+                            isFromType<OAuthErrorData>(error.rawError, [
+                                "error",
+                                "error_description",
+                            ])
+                        ) {
+                            // TODO: Better notification system
+                            // Send notifications
+                            sendNotification(
+                                "warning",
+                                "Token was not accepted by Discord",
+                            );
+
+                            // Return boolean based on configuration
+                            return configuration.enableApplicationIteration;
+                        } else {
+                            // TODO: Better notification system
+                            // Send notifications
+                            sendNotification("error", error);
+
+                            // Return false
+                            return false;
+                        }
+                    });
+            }
+
+            // TODO: Better notification system
+            // Send notifications
+            sendNotification("warning", "Token does not meet the requirements");
+
+            // Return boolean based on configuration
+            return configuration.enableApplicationIteration;
+        })
+        .catch((error: Error) => {
+            // TODO: Better notification system
+            // Send notifications
+            sendNotification("error", error);
+        });
+} else {
+    // Try to log in bot at Discord
+    client.login(configuration.applications.token).catch((error: Error) => {
+        // TODO: Better notification system
+        // Send notifications
+        sendNotification("error", error);
+    });
+}

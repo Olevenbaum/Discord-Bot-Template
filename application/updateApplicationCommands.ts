@@ -1,4 +1,4 @@
-// Import types
+// Type imports
 import { ApplicationCommand, Client, Collection, Routes } from "discord.js";
 
 // Export lambda function
@@ -9,18 +9,22 @@ export default async (client: Client) => {
         return;
     }
 
-    // Define registered application commands collection
+    /**
+     * Collection of registered application commands
+     */
     const registeredApplicationCommands: Collection<
         string,
         ApplicationCommand
     > = new Collection();
 
-    // Request registered application commands from Discord
+    /**
+     * Requested registered application commands from Discord
+     */
     const rawRegisteredApplicationCommands = (await client.rest.get(
         Routes.applicationCommands(client.application.id),
-    )) as ApplicationCommand[];
+    )) as ApplicationCommand[]; // TODO: Fix type
 
-    // Add registered application commands to collection
+    // Iterate over requested registered application commands
     rawRegisteredApplicationCommands.forEach(
         (registeredApplicationCommand: ApplicationCommand) =>
             registeredApplicationCommands.set(
@@ -29,19 +33,23 @@ export default async (client: Client) => {
             ),
     );
 
-    // Create array for requests to be sent to Discord
+    /**
+     * Array of promises to be sent to Discord
+     */
     const promises: Promise<any>[] = [];
 
-    // Iterate over application commands
+    // Iterate over application commands imported from local files
     applicationCommands.each(
         (savedApplicationCommand, savedApplicationCommandName) => {
-            // Search for application command in registered application commands
+            /**
+             * Registered application command matching the saved application command
+             */
             const registeredApplicationCommand =
                 registeredApplicationCommands.get(savedApplicationCommandName);
 
             // Check if application command is not registered
             if (!registeredApplicationCommand) {
-                // Add request for registration to promises
+                // Add request to promises
                 promises.push(
                     client.rest
                         .post(
@@ -68,7 +76,7 @@ export default async (client: Client) => {
                     savedApplicationCommand,
                 )
             ) {
-                // Add request for application command update to promises
+                // Add request to promises
                 promises.push(
                     client.rest
                         .patch(
@@ -99,9 +107,9 @@ export default async (client: Client) => {
     // Iterate over registered application commands
     registeredApplicationCommands.each(
         (registeredApplicationCommand, registeredApplicationCommandName) => {
-            // Check if application command still exists
+            // Check if application command still exists in local files
             if (!applicationCommands.has(registeredApplicationCommandName)) {
-                // Add request for deletion of application command to promises
+                // Add request to promises
                 promises.push(
                     client.rest
                         .delete(
@@ -126,7 +134,7 @@ export default async (client: Client) => {
         },
     );
 
-    // Execute promises
+    // Send promises to Discord
     await Promise.all(promises).catch((error: Error) =>
         // Send notifications
         sendNotification("error", error),

@@ -1,4 +1,4 @@
-// Import types
+// Type imports
 import {
     ApplicationCommandType,
     ChatInputCommandInteraction,
@@ -8,30 +8,34 @@ import {
     SavedChatInputCommand,
 } from "../../../../declarations/types";
 
-// Define application command type
+/**
+ * Chat input command handler
+ */
 export const applicationCommandType: SavedApplicationCommandType = {
-    // Set application command type
     type: ApplicationCommandType.ChatInput,
 
-    // Handle chat input command interaction
     async execute(interaction: ChatInputCommandInteraction) {
-        // Search for chat input command
+        /**
+         * Chat input command that was interacted with
+         */
         const chatInputCommand = applicationCommands
             .filter(
                 (applicationCommand) => applicationCommand.type === this.type,
             )
             .get(interaction.commandName) as SavedChatInputCommand; // TODO: Fix type
 
-        // Try to execute chat input command specific function
+        // Try to forward chat input command interaction response prompt
         await chatInputCommand
             .execute(interaction)
             .catch(async (error: Error) => {
+                // TODO: Better notification system
                 // Send notifications
                 sendNotification(
                     "error",
                     error,
                     `There was an error executing the chat input command \`\`${interaction.commandName}\`\`!`,
                     interaction,
+                    true,
                 );
             });
     },

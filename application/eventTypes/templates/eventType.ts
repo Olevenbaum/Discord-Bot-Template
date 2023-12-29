@@ -1,10 +1,11 @@
-// Import types
+// Type imports
 import { Events } from "discord.js";
 import { SavedEventType } from "../../../declarations/types";
 
-// Define event type
+/**
+ * Template for event handler
+ */
 export const eventType: SavedEventType = {
-    // Set event kind and type
     once: false,
     type:
         Events.ApplicationCommandPermissionsUpdate ||
@@ -77,6 +78,5 @@ export const eventType: SavedEventType = {
         Events.Warn ||
         Events.WebhooksUpdate,
 
-    // Handle event
     async execute(interaction) {},
 };

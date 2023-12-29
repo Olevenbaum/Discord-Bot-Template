@@ -1,34 +1,38 @@
-// Import types
+// Type imports
 import { ApplicationCommandType } from "discord.js";
 import { SavedApplicationCommandType } from "../../../../../declarations/types";
 
-// Define application command type
+/**
+ * Template for application command type handler
+ */
 export const applicationCommandType: SavedApplicationCommandType = {
-    // Set application command type
     type:
         ApplicationCommandType.ChatInput ||
         ApplicationCommandType.Message ||
         ApplicationCommandType.User,
 
-    // Handle application command interaction
     async execute(interaction) {
-        // Search for application command
+        /**
+         * Application command that was interacted with
+         */
         const applicationCommand = applicationCommands
             .filter(
                 (applicationCommand) => applicationCommand.type === this.type,
             )
             .get(interaction.commandName);
 
-        // Try to execute application command specific function
+        // Try to forward application command interaction response prompt
         await applicationCommand
             .execute(interaction)
             .catch(async (error: Error) => {
+                // TODO: Better notification system
                 // Send notifications
                 sendNotification(
                     "error",
                     error,
                     `There was an error executing the application command \`\`${interaction.commandName}\`\`!`,
                     interaction,
+                    true,
                 );
             });
     },

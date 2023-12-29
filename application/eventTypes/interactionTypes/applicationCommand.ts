@@ -1,4 +1,4 @@
-// Import types
+// Type imports
 import {
     ChatInputCommandInteraction,
     InteractionType,
@@ -7,34 +7,38 @@ import {
 } from "discord.js";
 import { SavedInteractionType } from "../../../declarations/types";
 
-// Define interaction type
-export const interactionType: SavedInteractionType = {
-    // Set interaction type
+/**
+ * Application command interaction handler
+ */
+export const applicationCommandInteraction: SavedInteractionType = {
     type: InteractionType.ApplicationCommand,
 
-    // Handle application command interaction
     async execute(
         interaction:
             | ChatInputCommandInteraction
             | MessageContextMenuCommandInteraction
             | UserContextMenuCommandInteraction,
     ) {
-        // Search for application command type
+        /**
+         * Application command type of the application command that was interacted with
+         */
         const applicationCommandType = applicationCommandTypes.get(
             interaction.commandType,
         );
 
         // Check if application command type was found
         if (applicationCommandType) {
-            // Try to execute application command type specific function
+            // Try to forward application command interaction response prompt
             await applicationCommandType
                 .execute(interaction)
                 .catch((error: Error) => {
+                    // TODO: Better notification system
                     // Send notifications
                     sendNotification("error", error);
                 });
         } else {
-            // Send notification
+            // TODO: Better notification system
+            // Send notifications
             sendNotification(
                 "error",
                 `Unable to find application command type matching '${interaction.commandType}' in global variable`,

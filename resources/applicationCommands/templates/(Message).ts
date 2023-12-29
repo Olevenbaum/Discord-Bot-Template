@@ -1,14 +1,14 @@
-// Import types
+// Type imports
 import { ApplicationCommandType, ContextMenuCommandBuilder } from "discord.js";
 import { SavedMessageCommand } from "../../../declarations/types";
 
-// Define message command
+/**
+ * Message command
+ */
 const messageCommand: SavedMessageCommand = {
-    // Set message command information and type
     data: new ContextMenuCommandBuilder().setName(""),
     type: ApplicationCommandType.Message,
 
-    // Handle command response
     async execute(interaction) {},
 };
 

@@ -1,4 +1,4 @@
-// Import types
+// Type imports
 import {
     ApplicationCommandType,
     UserContextMenuCommandInteraction,
@@ -8,28 +8,32 @@ import {
     SavedUserCommand,
 } from "../../../../declarations/types";
 
-// Define application command type
+/**
+ * User command handler
+ */
 export const applicationCommandType: SavedApplicationCommandType = {
-    // Set application command type
     type: ApplicationCommandType.User,
 
-    // Handle user command interaction
     async execute(interaction: UserContextMenuCommandInteraction) {
-        // Search for user command
+        /**
+         * User command that was interacted with
+         */
         const userCommand = applicationCommands
             .filter(
                 (applicationCommand) => applicationCommand.type === this.type,
             )
             .get(interaction.commandName) as SavedUserCommand; // TODO: Fix type
 
-        // Try to execute user command specific function
+        // Try to forward user command interaction response prompt
         await userCommand.execute(interaction).catch(async (error) => {
+            // TODO: Better notification system
             // Send notifications
             sendNotification(
                 "error",
                 error,
                 `There was an error executing the application command \`\`${interaction.commandName}\`\`!`,
                 interaction,
+                true,
             );
         });
     },

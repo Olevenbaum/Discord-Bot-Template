@@ -1,37 +1,47 @@
-// Import modules
+// Module imports
 import fs from "node:fs";
 import path from "node:path";
 
-// Import types
+// Type imports
 import {
     SavedApplicationCommand,
     SavedApplicationCommandType,
     SavedInteractionType,
 } from "../declarations/types";
 
-// Export lambda function
+// Configuration data import
+import configuration from "configuration.json";
+
 export default () => {
     // Send notifications
     sendNotification("information", "Creating interaction types collection...");
 
-    // Define interaction types path
+    /**
+     * Path of interaction types imported from local files
+     */
     const interactionTypesPath = path.join(__dirname, "./interactionTypes");
 
-    // Read interaction type filenames
+    /**
+     * Interaction type file names of interaction types imported from local files
+     */
     const interactionTypeFileNames = fs
         .readdirSync(interactionTypesPath)
-        .filter((interactionTypeFileName) =>
-            interactionTypeFileName.endsWith(".js"),
+        .filter(
+            (interactionTypeFileName) =>
+                interactionTypeFileName.endsWith(".js") ||
+                interactionTypeFileName.endsWith(".ts"),
         );
 
-    // Iterate over interaction type files
+    // Iterate over interaction type file names
     interactionTypeFileNames.forEach((interactionTypeFileName) => {
-        // Read interaction type
+        /**
+         * Interaction type imported from local file
+         */
         const interactionType: SavedInteractionType = require(
             path.join(interactionTypesPath, interactionTypeFileName),
         );
 
-        // Add interaction type to it's collection
+        // Add interaction type to its collection
         interactionTypes.set(interactionType.type, interactionType);
     });
 
@@ -41,23 +51,31 @@ export default () => {
         "Creating application command types collection...",
     );
 
-    // Define application command types path
+    /**
+     * Path of application command types imported from local files
+     */
     const applicationCommandTypesPath = path.join(
         __dirname,
         "./applicationCommandTypes",
     );
 
-    // Read application command type filenames
+    /**
+     * Application command type file names of application command types imported from local files
+     */
     const applicationCommandTypeFileNames = fs
         .readdirSync(applicationCommandTypesPath)
-        .filter((applicationCommandTypeFileName) =>
-            applicationCommandTypeFileName.endsWith(".js"),
+        .filter(
+            (applicationCommandTypeFileName) =>
+                applicationCommandTypeFileName.endsWith(".js") ||
+                applicationCommandTypeFileName.endsWith(".js"),
         );
 
-    // Iterate over application command types
+    // Iterate over application command type file names
     applicationCommandTypeFileNames.forEach(
         (applicationCommandTypeFileName) => {
-            // Read application command type
+            /**
+             * Application command type imported from local file
+             */
             const applicationCommandType: SavedApplicationCommandType = require(
                 path.join(
                     applicationCommandTypesPath,
@@ -65,7 +83,7 @@ export default () => {
                 ),
             );
 
-            // Add application command type to it's collection
+            // Add application command type tp its collection
             applicationCommandTypes.set(
                 applicationCommandType.type,
                 applicationCommandType,
@@ -79,27 +97,35 @@ export default () => {
         "Creating application commands collection...",
     );
 
-    // Define application commands path
+    /**
+     * Path of application commands imported from local files
+     */
     const applicationCommandsPath = path.join(
         __dirname,
         "../resources/applicationCommands",
     );
 
-    // Read application command filenames
+    /**
+     * Application command file names of application commands imported from local files
+     */
     const applicationCommandFileNames = fs
         .readdirSync(applicationCommandsPath)
-        .filter((applicationCommandFileName) =>
-            applicationCommandFileName.endsWith(".ts"),
+        .filter(
+            (applicationCommandFileName) =>
+                applicationCommandFileName.endsWith(".ts") ||
+                applicationCommandFileName.endsWith(".js"),
         );
 
-    // Iterate over all application command files
+    // Iterate over application command file names
     applicationCommandFileNames.forEach((applicationCommandFileName) => {
-        // Read application command
+        /**
+         * Application command imported from local file
+         */
         const applicationCommand: SavedApplicationCommand = require(
             path.join(applicationCommandsPath, applicationCommandFileName),
         );
 
-        // Add application command to it's collection
+        // Add application command to its collection
         applicationCommands.set(
             applicationCommand.data.name,
             applicationCommand,
@@ -107,8 +133,44 @@ export default () => {
     });
 
     // Send notifications
-    sendNotification("information", "Importing blocked users...");
+    sendNotification(
+        "information",
+        "Creating message components collection...",
+    );
 
-    // Import blocked users
-    blockedUsers.push(require("../resources/blockedUsers.json"));
+    /**
+     * Path of components imported from local files
+     */
+    const componentsPath = path.join(__dirname, "../resources/components");
+
+    /**
+     * Component file names of components imported from local files
+     */
+    const componentFileNames = fs
+        .readdirSync(componentsPath)
+        .filter(
+            (componentFileName) =>
+                componentFileName.endsWith(".ts") ||
+                componentFileName.endsWith(".js"),
+        );
+
+    // Iterate over component file names
+    componentFileNames.forEach((componentFileName) => {
+        /**
+         * Component imported from local file
+         */
+        const component = require(path.join(componentsPath, componentFileName));
+
+        // Add component to its collection
+        components.set(component.name, component);
+    });
+
+    // Check if blocked users are enabled
+    if (configuration.enableBlockedUsers) {
+        // Send notifications
+        sendNotification("information", "Importing blocked users...");
+
+        // Add blocked user IDs imported from file
+        blockedUsers.push(require("../resources/blockedUsers.json"));
+    }
 };
