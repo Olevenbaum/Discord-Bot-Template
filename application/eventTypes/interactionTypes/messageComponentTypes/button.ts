@@ -1,57 +1,43 @@
 // Type imports
-import { ComponentType } from "discord.js";
-
-// TODO
+import { ButtonInteraction, ComponentType } from "discord.js";
+import {
+    PredefinedInteractionErrorResponse,
+    SavedButtonComponent,
+    SavedMessageComponentType,
+} from "../../../../declarations/types";
 
 /**
- * Button interaction handler
+ * Button component interaction handler
  */
-export const buttonInteraction = {
-    // Setting message component type
+export const buttonComponentInteraction: SavedMessageComponentType = {
     type: ComponentType.Button,
 
-    // Handling interaction
-    async execute(interaction) {
-        // Searching for button component
-        const buttonComponent = interaction.client.messageComponents
-            .filter((messageComponent) => messageComponent.type === this.type)
-            .get(interaction.customId.replace(/[0-9]/g, ""));
+    async execute(interaction: ButtonInteraction) {
+        /**
+         * Button component that was interacted with
+         */
+        const buttonComponent = components.get(
+            interaction.customId.replace(/[0-9]/g, "") + `(${this.type})`,
+        ) as SavedButtonComponent;
 
-        // Checking if button component was found
-        if (buttonComponent) {
-            // Trying to execute button component specific script
-            await buttonComponent.execute(interaction).catch((error) => {
-                // Printing error
-                console.error("[ERROR]".padEnd(consoleSpace), ":", error);
-
-                // Checking if button component interaction was acknowledged
-                if (interaction.replied || interaction.deferred) {
-                    // Sending follow up message
-                    interaction.followUp({
-                        content:
-                            "There was an error while executing this button component interaction!",
-                        ephemeral: true,
-                    });
-                }
-            });
-        } else {
-            // Replying to interaction
-            interaction.reply(
-                `The button component ${interaction.customId.replace(
-                    /[0-9]/g,
-                    "",
-                )} could not be found!`,
+        // Try to forward button component interaction response prompt
+        await buttonComponent.execute(interaction).catch((error: Error) => {
+            // Send notifications
+            sendNotification(
+                {
+                    consoleOutput: `Error handling interaction with button component '${interaction.customId}'`,
+                    content: `There was an error handling the interaction with the button component \`\`${interaction.customId}\`\`!`,
+                    error: error,
+                    interaction,
+                    owner: interaction.client.application.owner,
+                    type: "error",
+                },
+                {
+                    content:
+                        PredefinedInteractionErrorResponse.errorHandlingInteraction,
+                    interaction,
+                },
             );
-
-            // Printing error message
-            console.error(
-                "[ERROR]".padEnd(consoleSpace),
-                ":",
-                `No button component matching ${interaction.customId.replace(
-                    /[0-9]/g,
-                    "",
-                )} was found`,
-            );
-        }
+        });
     },
 };

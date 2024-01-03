@@ -19,23 +19,32 @@ import configuration from "configuration.json";
  */
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-// TODO: Better notification system
 // Send notifications
-sendNotification("information", "Defining global functions...");
+sendNotification({
+    content: "Defining global functions...",
+    owner: client.application.owner,
+    type: "information",
+});
 
 // Define global functions
 require("./defineFunctions.ts");
 
-// TODO: Better notification system
 // Send notifications
-sendNotification("information", "Reading files...");
+sendNotification({
+    content: "Reading files...",
+    owner: client.application.owner,
+    type: "information",
+});
 
 // Read files
-require("./readFiles.ts");
+require("./readFiles.ts")(client);
 
-// TODO: Better notification system
 // Send notifications
-sendNotification("information", "Creating event listeners...");
+sendNotification({
+    content: "Creating event listeners...",
+    owner: client.application.owner,
+    type: "information",
+});
 
 /**
  * Path of locally saved event type files
@@ -68,9 +77,12 @@ eventTypeFileNames.forEach((eventTypeFileName) => {
     }
 });
 
-// TODO: Better notification system
 // Send notifications
-sendNotification("information", "Logging in bot at Discord...");
+sendNotification({
+    content: "Logging in bot at Discord...",
+    owner: client.application.owner,
+    type: "information",
+});
 
 // Check if multiple bots are provided
 if (Array.isArray(configuration.applications)) {
@@ -118,19 +130,24 @@ if (Array.isArray(configuration.applications)) {
                                 "error_description",
                             ])
                         ) {
-                            // TODO: Better notification system
                             // Send notifications
-                            sendNotification(
-                                "warning",
-                                "Token was not accepted by Discord",
-                            );
+                            sendNotification({
+                                content: "Token was not accepted by Discord",
+                                owner: client.application.owner,
+                                type: "warning",
+                            });
 
                             // Return boolean based on configuration
                             return configuration.enableApplicationIteration;
                         } else {
-                            // TODO: Better notification system
                             // Send notifications
-                            sendNotification("error", error);
+                            sendNotification({
+                                content:
+                                    "Something went wrong trying to log in you bot",
+                                error,
+                                owner: client.application.owner,
+                                type: "error",
+                            });
 
                             // Return false
                             return false;
@@ -138,23 +155,34 @@ if (Array.isArray(configuration.applications)) {
                     });
             }
 
-            // TODO: Better notification system
             // Send notifications
-            sendNotification("warning", "Token does not meet the requirements");
+            sendNotification({
+                content: "Token does not meet the requirements",
+                owner: client.application.owner,
+                type: "warning",
+            });
 
             // Return boolean based on configuration
             return configuration.enableApplicationIteration;
         })
         .catch((error: Error) => {
-            // TODO: Better notification system
             // Send notifications
-            sendNotification("error", error);
+            sendNotification({
+                content: "Something went wrong trying to log in you bot",
+                error,
+                owner: client.application.owner,
+                type: "error",
+            });
         });
 } else {
     // Try to log in bot at Discord
     client.login(configuration.applications.token).catch((error: Error) => {
-        // TODO: Better notification system
         // Send notifications
-        sendNotification("error", error);
+        sendNotification({
+            content: "Something went wrong trying to log in you bot",
+            error,
+            owner: client.application.owner,
+            type: "error",
+        });
     });
 }

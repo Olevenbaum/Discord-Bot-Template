@@ -1,11 +1,14 @@
 // Type imports
 import { ApplicationCommandType } from "discord.js";
-import { SavedApplicationCommandType } from "../../../../../declarations/types";
+import {
+    PredefinedInteractionErrorResponse,
+    SavedApplicationCommandType,
+} from "../../../../../declarations/types";
 
 /**
  * Template for application command type handler
  */
-export const applicationCommandType: SavedApplicationCommandType = {
+export const applicationCommandTypeInteraction: SavedApplicationCommandType = {
     type:
         ApplicationCommandType.ChatInput ||
         ApplicationCommandType.Message ||
@@ -15,24 +18,29 @@ export const applicationCommandType: SavedApplicationCommandType = {
         /**
          * Application command that was interacted with
          */
-        const applicationCommand = applicationCommands
-            .filter(
-                (applicationCommand) => applicationCommand.type === this.type,
-            )
-            .get(interaction.commandName);
+        const applicationCommand = applicationCommands.get(
+            interaction.commandName + `(${this.type})`,
+        );
 
         // Try to forward application command interaction response prompt
         await applicationCommand
             .execute(interaction)
             .catch(async (error: Error) => {
-                // TODO: Better notification system
                 // Send notifications
                 sendNotification(
-                    "error",
-                    error,
-                    `There was an error executing the application command \`\`${interaction.commandName}\`\`!`,
-                    interaction,
-                    true,
+                    {
+                        consoleOutput: `Error handling interaction with application command '${interaction.commandName}'`,
+                        content: `There was an error handling the interaction with the application command \`\`${interaction.commandName}\`\`!`,
+                        error,
+                        interaction,
+                        owner: interaction.client.application.owner,
+                        type: "error",
+                    },
+                    {
+                        content:
+                            PredefinedInteractionErrorResponse.errorHandlingInteraction,
+                        interaction,
+                    },
                 );
             });
     },

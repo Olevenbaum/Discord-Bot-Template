@@ -3,7 +3,7 @@ import { ApplicationCommandType, ContextMenuCommandBuilder } from "discord.js";
 import { SavedMessageCommand } from "../../../declarations/types";
 
 /**
- * Message command
+ * Template for message command
  */
 const messageCommand: SavedMessageCommand = {
     data: new ContextMenuCommandBuilder().setName(""),

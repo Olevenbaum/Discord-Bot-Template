@@ -4,6 +4,7 @@ import {
     UserContextMenuCommandInteraction,
 } from "discord.js";
 import {
+    PredefinedInteractionErrorResponse,
     SavedApplicationCommandType,
     SavedUserCommand,
 } from "../../../../declarations/types";
@@ -11,29 +12,34 @@ import {
 /**
  * User command handler
  */
-export const applicationCommandType: SavedApplicationCommandType = {
+export const userCommandInteraction: SavedApplicationCommandType = {
     type: ApplicationCommandType.User,
 
     async execute(interaction: UserContextMenuCommandInteraction) {
         /**
          * User command that was interacted with
          */
-        const userCommand = applicationCommands
-            .filter(
-                (applicationCommand) => applicationCommand.type === this.type,
-            )
-            .get(interaction.commandName) as SavedUserCommand; // TODO: Fix type
+        const userCommand = applicationCommands.get(
+            interaction.commandName + `(${this.type})`,
+        ) as SavedUserCommand;
 
         // Try to forward user command interaction response prompt
         await userCommand.execute(interaction).catch(async (error) => {
-            // TODO: Better notification system
             // Send notifications
             sendNotification(
-                "error",
-                error,
-                `There was an error executing the application command \`\`${interaction.commandName}\`\`!`,
-                interaction,
-                true,
+                {
+                    consoleOutput: `Error handling interaction with user command '${interaction.commandName}'`,
+                    content: `There was an error handling the interaction with the user command \`\`${interaction.commandName}\`\`!`,
+                    error,
+                    interaction,
+                    owner: interaction.client.application.owner,
+                    type: "error",
+                },
+                {
+                    content:
+                        PredefinedInteractionErrorResponse.errorHandlingInteraction,
+                    interaction,
+                },
             );
         });
     },

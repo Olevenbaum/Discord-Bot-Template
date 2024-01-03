@@ -3,7 +3,7 @@ import { ApplicationCommandType, ContextMenuCommandBuilder } from "discord.js";
 import { SavedUserCommand } from "../../../declarations/types";
 
 /**
- * User command
+ * Template for user command
  */
 const userCommand: SavedUserCommand = {
     data: new ContextMenuCommandBuilder().setName(""),

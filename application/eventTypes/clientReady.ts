@@ -1,5 +1,5 @@
 // Type imports
-import { Client, Events } from "discord.js";
+import { Client, Events, userMention } from "discord.js";
 import { SavedEventType } from "../../declarations/types";
 
 /**
@@ -15,12 +15,17 @@ export const eventType: SavedEventType = {
 
         // Check if client is ready
         if (client.isReady()) {
-            // TODO: Better notification system
             // Send notifications
             sendNotification(
-                "information",
-                `Successfully logged in at Discord with username '${client.user.username}'`,
-                `Your bot ${client.user.username} is online now!`,
+                {
+                    type: "information",
+                    content: `Your bot ${userMention(
+                        client.user.id,
+                    )} is online now!`,
+                    owner: client.application.owner,
+                },
+                null,
+                `Successfully logged in bot at Discord with username '${client.user.username}'`,
             );
         }
     },

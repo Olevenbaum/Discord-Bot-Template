@@ -4,11 +4,12 @@ import {
     ApplicationCommandOption,
     ApplicationCommandType,
     Collection,
-    Interaction,
     InteractionType,
     MessageComponentType,
 } from "discord.js";
 import {
+    InteractionErrorResponse,
+    Notification,
     SavedApplicationCommand,
     SavedApplicationCommandType,
     SavedComponent,
@@ -86,18 +87,13 @@ declare global {
      * The **sendNotification()** function prints the notification's content to the terminal or console and can send the
      * message to the interaction creator if there was one and to the bots owner or team if enabled.
      *
-     * @param type The type of notification
-     * @param content The content of the notification which is printed to the console/terminal
-     * @param message The message of the notification which is sent to the owner/team and/or the interaction creator
-     * @param interaction The interaction the notification was caused by
-     * @param sendToInteractionCreator Whether to send the message to the Discord user who created the interaction
+     * @param notification The notification that should be sent to the owner, owner of the developer team or all team
+     * members and printed to the console
+     * @param interactionErrorResponse The response to the interaction that caused the error if there was one
      */
     function sendNotification(
-        type: "error" | "information" | "warning",
-        content: string | Error,
-        message?: string,
-        interaction?: Interaction,
-        sendToInteractionCreator?: boolean,
+        notification?: Notification,
+        interactionErrorResponse?: InteractionErrorResponse,
     ): void;
 
     /**

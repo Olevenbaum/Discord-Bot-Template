@@ -2,10 +2,9 @@
 import {
     ApplicationCommandOption,
     ApplicationCommandOptionType,
-    Interaction,
-    Team,
     User,
 } from "discord.js";
+import { InteractionErrorResponse, Notification } from "../declarations/types";
 
 // Configuration data import
 import configuration from "configuration.json";
@@ -192,98 +191,122 @@ export default () => {
         );
     };
 
-    // TODO: comments
     global.sendNotification = async function (
-        type: "error" | "information" | "warning",
-        content: string | Error,
-        message: string = typeof content === "string"
-            ? content
-            : "An error occurred!",
-        interaction?: Interaction,
-        sendToInteractionCreator: boolean = false,
+        notification?: Notification,
+        interactionErrorResponse?: InteractionErrorResponse,
     ) {
-        // Check which type of notification should be printed
-        switch (type) {
-            case "error":
-                console.error("[ERROR]:", content);
+        // Check if notification was provided
+        if (notification) {
+            // Differentiate between types of notification
+            switch (notification.type) {
+                case "error":
+                    // Print error message
+                    console.error(
+                        "[ERROR]:\n",
+                        notification.consoleOutput ?? notification.content,
+                        notification.error ? "\n" : "",
+                        notification.error ?? null,
+                    );
 
-                break;
+                    // Break
+                    break;
 
-            case "information":
-                console.info("[INFORMATION]:", content);
+                case "information":
+                    // Print information message
+                    console.info(
+                        "[INFORMATION]:\n",
+                        notification.consoleOutput ?? notification.content,
+                    );
 
-                break;
+                    // Break
+                    break;
 
-            case "warning":
-                console.warn("[WARNING]:", content);
+                case "warning":
+                    // Print warning
+                    console.warn(
+                        "[WARNING]:\n",
+                        notification.consoleOutput ?? notification.content,
+                    );
 
-                break;
+                    // Break
+                    break;
+            }
+
+            // Check if notifications are enabled (for this notification type)
+            if (configuration.notifications) {
+                // Check if notification type should be sent
+                if (
+                    (typeof configuration.notifications === "boolean" ||
+                        ((!(
+                            "notificationType" in configuration.notifications
+                        ) ||
+                            notification.type in
+                                configuration.notifications.notificationType) &&
+                            notification.priority)) ??
+                    3 >= configuration.notifications.priority ??
+                    3
+                ) {
+                    /**
+                     * Users that should receive the notification
+                     */
+                    const users =
+                        notification.owner instanceof User
+                            ? [notification.owner]
+                            : notification.owner.members
+                                  .filter(
+                                      (teamMember) =>
+                                          typeof configuration.notifications ===
+                                              "boolean" ||
+                                          (typeof configuration.notifications
+                                              .teamNotifications ===
+                                              "boolean" &&
+                                              configuration.notifications
+                                                  .teamNotifications) ||
+                                          (typeof configuration.notifications
+                                              .teamNotifications !==
+                                              "boolean" &&
+                                              ((configuration.notifications
+                                                  .teamNotifications
+                                                  .excludeMembers &&
+                                                  !configuration.notifications.teamNotifications.excludeMembers.includes(
+                                                      teamMember.user.id,
+                                                  )) ||
+                                                  configuration.notifications
+                                                      .teamNotifications
+                                                      .excludeMembers)),
+                                  )
+                                  .map((teamMember) => teamMember.user);
+
+                    // Iterate over users that should receive the message
+                    for (const user of users) {
+                        // Send message to user
+                        await user.send(notification.content);
+                    }
+                }
+            }
         }
 
         // Check if message should be sent to interaction creator
         if (
-            interaction &&
-            sendToInteractionCreator &&
-            !interaction.isAutocomplete()
+            interactionErrorResponse &&
+            !interactionErrorResponse.interaction.isAutocomplete()
         ) {
-            // Check if application command interaction was acknowledged
-            if (interaction.replied || interaction.deferred) {
-                await interaction.followUp({
-                    content: message,
+            // Check if interaction was acknowledged
+            if (
+                interactionErrorResponse.interaction.replied ||
+                interactionErrorResponse.interaction.deferred
+            ) {
+                // Send follow-up message
+                await interactionErrorResponse.interaction.followUp({
+                    content: interactionErrorResponse.content,
                     ephemeral: true,
                 });
             } else {
-                await interaction.reply({
-                    content: message,
+                // Send interaction response
+                await interactionErrorResponse.interaction.reply({
+                    content: interactionErrorResponse.content,
                     ephemeral: true,
                 });
-            }
-        }
-
-        // Check if notifications are enabled (for this type)
-        if (configuration.notifications) {
-            // Save notifications as own variable
-            const notifications = configuration.notifications;
-
-            // Check if notification type should be sent
-            if (
-                typeof notifications === "boolean" ||
-                !("notificationType" in notifications) ||
-                type in notifications.notificationType
-            ) {
-                // Save owner of bot
-                const owner: User | Team = interaction.client.application.owner;
-
-                // Send message to owner
-                await (owner instanceof User ? owner : owner.owner.user).send(
-                    message,
-                );
-
-                // Check if team members should receive notifications
-                if (
-                    owner instanceof Team &&
-                    (typeof notifications === "boolean" ||
-                        ("enableTeamNotifications" in notifications &&
-                            notifications.enableTeamNotifications))
-                ) {
-                    // Iterate over team members
-                    for (const [teamMemberId, teamMember] of owner.members) {
-                        // Check if team member wants to receive messages
-                        if (
-                            typeof notifications !== "boolean" &&
-                            (typeof notifications.teamNotifications ===
-                                "boolean" ||
-                                ("excludeMembers" in
-                                    notifications.teamNotifications &&
-                                    !notifications.teamNotifications.excludeMembers.includes(
-                                        teamMemberId,
-                                    )))
-                        ) {
-                            // Send message to team member
-                            await teamMember.user.send(message);
-                        }
-                    }
-                }
             }
         }
     };

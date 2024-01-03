@@ -60,14 +60,22 @@ export default async (client: Client) => {
                         )
                         .then(() => {
                             // Send notifications
-                            sendNotification(
-                                "information",
-                                `Successfully registered new application command '${savedApplicationCommandName}'`,
-                            );
+                            sendNotification({
+                                consoleOutput: `Successfully registered new application command '${savedApplicationCommandName}'`,
+                                content: `Your bots new application command \`\`${savedApplicationCommandName}\`\` was registered successfully! Please note, that it can take some time that the application command can be used.`,
+                                owner: client.application.owner,
+                                type: "information",
+                            });
                         })
                         .catch((error: Error) =>
                             // Send notifications
-                            sendNotification("error", error),
+                            sendNotification({
+                                consoleOutput: `Error registering new application command '${savedApplicationCommandName}'`,
+                                content: `There was an error registering your bots application command \`\`${savedApplicationCommandName}\`\`!`,
+                                error,
+                                owner: client.application.owner,
+                                type: "error",
+                            }),
                         ),
                 );
             } else if (
@@ -90,14 +98,22 @@ export default async (client: Client) => {
                         )
                         .then(() => {
                             // Send notifications
-                            sendNotification(
-                                "information",
-                                `Successfully updated application command ${savedApplicationCommandName}`,
-                            );
+                            sendNotification({
+                                consoleOutput: `Successfully updated application command '${savedApplicationCommandName}'`,
+                                content: `Your bots application command \`\`${savedApplicationCommandName}\`\` was updated successfully! Please not, that it can take some time that the application commands changes are active.`,
+                                owner: client.application.owner,
+                                type: "information",
+                            });
                         })
                         .catch((error: Error) =>
                             // Send notifications
-                            sendNotification("error", error),
+                            sendNotification({
+                                consoleOutput: `Error updating application command '${savedApplicationCommandName}'`,
+                                content: `There was an error registering your bots application command \`\`${savedApplicationCommandName}\`\`!`,
+                                error,
+                                owner: client.application.owner,
+                                type: "error",
+                            }),
                         ),
                 );
             }
@@ -120,14 +136,22 @@ export default async (client: Client) => {
                         )
                         .then(() => {
                             // Send notifications
-                            sendNotification(
-                                "information",
-                                `Successfully deleted application command ${registeredApplicationCommandName}`,
-                            );
+                            sendNotification({
+                                consoleOutput: `Successfully unregistered old application command '${registeredApplicationCommandName}'`,
+                                content: `Your bots old application command \`\`${registeredApplicationCommandName}\`\` was unregistered successfully! Please note, that it can take some time that the application command cannot be used anymore.`,
+                                owner: client.application.owner,
+                                type: "information",
+                            });
                         })
                         .catch((error: Error) =>
                             // Send notifications
-                            sendNotification("error", error),
+                            sendNotification({
+                                consoleOutput: `Error unregistering old application command '${registeredApplicationCommandName}'`,
+                                content: `There was an error unregistering your bots old application command \`\`${registeredApplicationCommandName}\`\`!`,
+                                error,
+                                owner: client.application.owner,
+                                type: "error",
+                            }),
                         ),
                 );
             }
@@ -137,21 +161,33 @@ export default async (client: Client) => {
     // Send promises to Discord
     await Promise.all(promises).catch((error: Error) =>
         // Send notifications
-        sendNotification("error", error),
+        sendNotification({
+            consoleOutput: `Error (un-)registering or updating application commands`,
+            content: `There was an error (un-)registering or updating your bots application commands!`,
+            error,
+            owner: client.application.owner,
+            type: "error",
+        }),
     );
 
     // Check if any application commands were added, deleted or updated
     if (promises.length > 0) {
         // Send notifications
-        sendNotification(
-            "information",
-            "Successfully updated all application commands",
-        );
+        sendNotification({
+            consoleOutput: "Successfully refreshed all application commands",
+            content: "Your bots application commands are now up to date!",
+            owner: client.application.owner,
+            type: "information",
+        });
     } else {
         // Send notifications
-        sendNotification(
-            "information",
-            "No commands to be updated, deleted or added were found",
-        );
+        sendNotification({
+            consoleOutput:
+                "No new, changed or old application commands were found",
+            content:
+                "There were no application commands that needed to be (un-)registered or updated!",
+            owner: client.application.owner,
+            type: "information",
+        });
     }
 };

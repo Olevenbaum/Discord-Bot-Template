@@ -3,23 +3,32 @@ import fs from "node:fs";
 import path from "node:path";
 
 // Type imports
+import { Client } from "discord.js";
 import {
     SavedApplicationCommand,
     SavedApplicationCommandType,
     SavedInteractionType,
+    SavedMessageComponentType,
 } from "../declarations/types";
 
 // Configuration data import
 import configuration from "configuration.json";
 
-export default () => {
+export default (client: Client) => {
     // Send notifications
-    sendNotification("information", "Creating interaction types collection...");
+    sendNotification({
+        content: "Creating interaction types collection...",
+        owner: client.application.owner,
+        type: "information",
+    });
 
     /**
      * Path of interaction types imported from local files
      */
-    const interactionTypesPath = path.join(__dirname, "./interactionTypes");
+    const interactionTypesPath = path.join(
+        __dirname,
+        "./eventTypes/interactionTypes",
+    );
 
     /**
      * Interaction type file names of interaction types imported from local files
@@ -46,17 +55,18 @@ export default () => {
     });
 
     // Send notifications
-    sendNotification(
-        "information",
-        "Creating application command types collection...",
-    );
+    sendNotification({
+        content: "Creating application command types collection...",
+        owner: client.application.owner,
+        type: "information",
+    });
 
     /**
      * Path of application command types imported from local files
      */
     const applicationCommandTypesPath = path.join(
         __dirname,
-        "./applicationCommandTypes",
+        "./eventTypes/interactionTypes/applicationCommandTypes",
     );
 
     /**
@@ -92,10 +102,53 @@ export default () => {
     );
 
     // Send notifications
-    sendNotification(
-        "information",
-        "Creating application commands collection...",
+    sendNotification({
+        content: "Importing message component type collection...",
+        owner: client.application.owner,
+        type: "information",
+    });
+
+    /**
+     * Path of message component types imported from local files
+     */
+    const messageComponentTypesPath = path.join(
+        __dirname,
+        "./eventTypes/interactionTypes/messageComponentTypes",
     );
+
+    /**
+     * Message component type file names of message component types imported from local files
+     */
+    const messageComponentTypeFileNames = fs
+        .readdirSync(messageComponentTypesPath)
+        .filter(
+            (messageComponentTypeFileName) =>
+                messageComponentTypeFileName.endsWith(".ts") ||
+                messageComponentTypeFileName.endsWith(".js"),
+        );
+
+    // Iterate over message component type file names
+    messageComponentTypeFileNames.forEach((messageComponentTypeFileName) => {
+        /**
+         * Message component type imported from local file
+         */
+        const messageComponentType: SavedMessageComponentType = require(
+            path.join(messageComponentTypesPath, messageComponentTypeFileName),
+        );
+
+        // Add message component type to its collection
+        messageComponentTypes.set(
+            messageComponentType.type,
+            messageComponentType,
+        );
+    });
+
+    // Send notifications
+    sendNotification({
+        content: "Creating application commands collection...",
+        owner: client.application.owner,
+        type: "information",
+    });
 
     /**
      * Path of application commands imported from local files
@@ -133,10 +186,11 @@ export default () => {
     });
 
     // Send notifications
-    sendNotification(
-        "information",
-        "Creating message components collection...",
-    );
+    sendNotification({
+        content: "Creating components collection...",
+        owner: client.application.owner,
+        type: "information",
+    });
 
     /**
      * Path of components imported from local files
@@ -168,7 +222,11 @@ export default () => {
     // Check if blocked users are enabled
     if (configuration.enableBlockedUsers) {
         // Send notifications
-        sendNotification("information", "Importing blocked users...");
+        sendNotification({
+            content: "Importing blocked users...",
+            owner: client.application.owner,
+            type: "information",
+        });
 
         // Add blocked user IDs imported from file
         blockedUsers.push(require("../resources/blockedUsers.json"));

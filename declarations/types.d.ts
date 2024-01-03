@@ -29,7 +29,10 @@ import {
     SlashCommandBuilder,
     StringSelectMenuBuilder,
     StringSelectMenuInteraction,
+    Team,
     TextInputBuilder,
+    TextInputStyle,
+    User,
     UserContextMenuCommandInteraction,
     UserSelectMenuBuilder,
     UserSelectMenuInteraction,
@@ -99,6 +102,22 @@ interface ComponentCreateOptions {
 }
 
 /**
+ * Interaction error response that is sent to the interaction creator whenever the interaction cannot be responded to as
+ * it should
+ */
+interface InteractionErrorResponse {
+    /**
+     * The content of the response
+     */
+    content: string;
+
+    /**
+     * The interaction that caused the error
+     */
+    interaction: Interaction;
+}
+
+/**
  * Options that can be passed when creating a mentionable select component
  */
 interface MentionableSelectComponentCreateOptions
@@ -117,6 +136,46 @@ interface MessageComponentCreateOptions extends ComponentCreateOptions {
      * Whether the message component should be disabled or not
      */
     disabled?: boolean;
+}
+
+/**
+ * Notification that is sent to the owner, the owner of the developer team or every team member of the developer team.
+ */
+interface Notification {
+    /**
+     * The message printed to the console if it differs from the notifications content
+     */
+    consoleOutput?: string;
+
+    /**
+     * The content of the notification
+     */
+    content: string;
+
+    /**
+     * Error message that caused the notification
+     */
+    error?: Error;
+
+    /**
+     * The interaction that caused the notification
+     */
+    interaction?: BaseInteraction;
+
+    /**
+     * The owner of the bot application
+     */
+    owner: User | Team;
+
+    /**
+     * Priority of the notification
+     */
+    priority?: number; // TODO: Type should be range (0 to 5)
+
+    /**
+     * The type of the notification
+     */
+    type: "error" | "information" | "warning";
 }
 
 /**
@@ -145,15 +204,11 @@ interface SavedActionRow extends SavedComponent {
      * The **create()** method creates an action row and the including the components listed in the
      * **includedComponents** property.
      *
-     * @param interaction The interaction that caused the action row to be created
      * @param options The options that modify the included components
      *
      * @returns The action row builder including its modified components
      */
-    create(
-        interaction: Interaction,
-        options: ActionRowCreateOptions,
-    ): ActionRowBuilder;
+    create(options?: ActionRowCreateOptions): ActionRowBuilder;
 }
 
 /**
@@ -220,15 +275,11 @@ interface SavedButtonComponent extends SavedMessageComponent {
     /**
      * The **create()** method creates the button component modified by the given options.
      *
-     * @param interaction The interaction that caused the button component to be created
      * @param options The options that modify the button component
      *
      * @returns The button builder modified by the options
      */
-    create(
-        interaction: Interaction,
-        options: ButtonComponentCreateOptions,
-    ): ButtonBuilder;
+    create(options?: ButtonComponentCreateOptions): ButtonBuilder;
 
     /**
      * The **execute()** method handles the response to the button interaction.
@@ -250,14 +301,12 @@ interface SavedChannelSelectComponent extends SavedMessageComponent {
     /**
      * The **create()** method creates the channel select component modified by the given options.
      *
-     * @param interaction The interaction that caused the channel select component to be created
      * @param options The options that modify the channel select component
      *
      * @returns The channel select builder modified by the options
      */
     create(
-        interaction: ChannelSelectMenuInteraction,
-        options: ChannelSelectComponentCreateOptions,
+        options?: ChannelSelectComponentCreateOptions,
     ): ChannelSelectMenuBuilder;
 
     /**
@@ -363,14 +412,12 @@ interface SavedMentionableSelectComponent extends SavedMessageComponent {
     /**
      * The **create()** method creates the mentionable select component modified by the given options.
      *
-     * @param interaction The interaction that caused the mentionable select component to be created
      * @param options The options that modify the mentionable select component
      *
      * @returns The mentionable select builder modified by the options
      */
     create(
-        interaction: MentionableSelectMenuInteraction,
-        options: MentionableSelectComponentCreateOptions,
+        options?: MentionableSelectComponentCreateOptions,
     ): MentionableSelectMenuBuilder;
 
     /**
@@ -415,13 +462,11 @@ interface SavedMessageComponent extends SavedComponent {
     /**
      * The **create()** method creates the message component modified by the given options.
      *
-     * @param interaction The interaction that caused the message component to be created
      * @param options The options to modify the message component
      *
      * @returns The message component builder modified by the options
      */
     create(
-        interaction: Interaction,
         options?: MessageComponentCreateOptions,
     ): MessageComponentBuilder | ActionRowBuilder;
 
@@ -462,15 +507,11 @@ interface SavedRoleSelectComponent extends SavedMessageComponent {
     /**
      * The **create()** method creates the role select component modified by the given options.
      *
-     * @param interaction The interaction that caused the role select component to be created
      * @param options The options to modify the roles select component
      *
      * @returns The role select builder modified by the options
      */
-    create(
-        interaction: Interaction,
-        options?: RoleSelectComponentCreateOptions,
-    ): RoleSelectMenuBuilder;
+    create(options?: RoleSelectComponentCreateOptions): RoleSelectMenuBuilder;
 
     /**
      * The **execute()** method handles the response to the role select component interaction
@@ -497,13 +538,11 @@ interface SavedStringSelectComponent extends SavedMessageComponent {
     /**
      * The **create()** method creates the string select component modified by the given options.
      *
-     * @param interaction The interaction that caused the string select component to be created
      * @param options The options to modify the string select component
      *
      * @returns The string select builder modified by the options
      */
     create(
-        interaction: Interaction,
         options?: StringSelectComponentCreateOptions,
     ): StringSelectMenuBuilder;
 
@@ -527,15 +566,11 @@ interface SavedTextInputComponent extends SavedComponent {
     /**
      * The **create()** method creates the text input component modified by the given options.
      *
-     * @param interaction The interaction that caused the text input component to be created
      * @param options The options to modify the text input component
      *
      * @returns The text input component builder modified by the options
      */
-    create(
-        interaction: Interaction,
-        options?: TextInputComponentCreateOptions,
-    ): TextInputBuilder;
+    create(options?: TextInputComponentCreateOptions): TextInputBuilder;
 }
 
 /**
@@ -572,15 +607,11 @@ interface SavedUserSelectComponent extends SavedMessageComponent {
     /**
      * The **create()** method creates the user select component modified by the given options.
      *
-     * @param interaction The interaction that caused the user select component to be created
      * @param options The options to modify the user select component
      *
      * @returns The user select builder modified by the options
      */
-    create(
-        interaction: Interaction,
-        options?: UserSelectComponentCreateOptions,
-    ): UserSelectMenuBuilder;
+    create(options?: UserSelectComponentCreateOptions): UserSelectMenuBuilder;
 
     /**
      * The **execute()** method handles the response to the user select component interaction.
@@ -614,15 +645,63 @@ interface SelectComponentCreateOptions extends MessageComponentCreateOptions {
  * Options that can be passed when creating a string select component
  */
 interface StringSelectComponentCreateOptions
-    extends SelectComponentCreateOptions {}
+    extends SelectComponentCreateOptions {
+    /**
+     * Options the user can choose from, overwrites the options of string select component
+     */
+    options?: string[];
+}
 
 /**
  * Options that can be passed when creating a text input component
  */
-interface TextInputComponentCreateOptions extends ComponentCreateOptions {}
+interface TextInputComponentCreateOptions extends ComponentCreateOptions {
+    /**
+     * Label of the text input component
+     */
+    label?: string;
+
+    /**
+     * Maximal length of the text that can be typed in the text input component
+     */
+    maximalLength?: number;
+
+    /**
+     * Minimal length of the text that can be typed in the text input component
+     */
+    minimalLength?: number;
+
+    /**
+     * Text placed in the text input component if nothing was typed
+     */
+    placeholder?: string;
+
+    /**
+     * Whether this text input component has to be filled to submit the modal
+     */
+    required?: boolean;
+
+    /**
+     * The style of the text input component
+     */
+    style?: TextInputStyle;
+
+    /**
+     * The value of the text input component
+     */
+    value?: string;
+}
 
 /**
  * Options that can be passed when creating a user select component
  */
 interface UserSelectComponentCreateOptions
     extends SelectComponentCreateOptions {}
+
+/**
+ * Predefined interaction error responses
+ */
+declare enum PredefinedInteractionErrorResponse {
+    errorHandlingInteraction = "There was an error handling your interaction!",
+    cannotInteract = "You are currently not allowed to interact with this bot!",
+}

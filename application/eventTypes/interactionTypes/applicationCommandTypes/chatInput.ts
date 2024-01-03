@@ -4,6 +4,7 @@ import {
     ChatInputCommandInteraction,
 } from "discord.js";
 import {
+    PredefinedInteractionErrorResponse,
     SavedApplicationCommandType,
     SavedChatInputCommand,
 } from "../../../../declarations/types";
@@ -11,31 +12,36 @@ import {
 /**
  * Chat input command handler
  */
-export const applicationCommandType: SavedApplicationCommandType = {
+export const chatInputCommandInteraction: SavedApplicationCommandType = {
     type: ApplicationCommandType.ChatInput,
 
     async execute(interaction: ChatInputCommandInteraction) {
         /**
          * Chat input command that was interacted with
          */
-        const chatInputCommand = applicationCommands
-            .filter(
-                (applicationCommand) => applicationCommand.type === this.type,
-            )
-            .get(interaction.commandName) as SavedChatInputCommand; // TODO: Fix type
+        const chatInputCommand = applicationCommands.get(
+            interaction.commandName + `(${this.type})`,
+        ) as SavedChatInputCommand;
 
         // Try to forward chat input command interaction response prompt
         await chatInputCommand
             .execute(interaction)
             .catch(async (error: Error) => {
-                // TODO: Better notification system
                 // Send notifications
                 sendNotification(
-                    "error",
-                    error,
-                    `There was an error executing the chat input command \`\`${interaction.commandName}\`\`!`,
-                    interaction,
-                    true,
+                    {
+                        consoleOutput: `Error handling interaction with chat input command '${interaction.commandName}'`,
+                        content: `There was an error handling the interaction with the chat input command \`\`${interaction.commandName}\`\`!`,
+                        error,
+                        interaction,
+                        owner: interaction.client.application.owner,
+                        type: "error",
+                    },
+                    {
+                        content:
+                            PredefinedInteractionErrorResponse.errorHandlingInteraction,
+                        interaction,
+                    },
                 );
             });
     },

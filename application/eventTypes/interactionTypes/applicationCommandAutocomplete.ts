@@ -12,7 +12,7 @@ import {
 /**
  * Chat input command autocomplete interaction handler
  */
-export const applicationCommandAutocompleteInteraction: SavedInteractionType = {
+export const chatInputCommandAutocompleteInteraction: SavedInteractionType = {
     type: InteractionType.ApplicationCommandAutocomplete,
 
     async execute(interaction: AutocompleteInteraction) {
@@ -31,9 +31,18 @@ export const applicationCommandAutocompleteInteraction: SavedInteractionType = {
         await chatInputCommand
             .autocomplete(interaction)
             .catch(async (error) => {
-                // TODO: Better notification system
                 // Send notifications
-                sendNotification("error", error);
+                sendNotification(
+                    {
+                        content: `There was an error handling the autocomplete interaction of the chat input command \`\`${interaction.commandName}\`\`!`,
+                        error,
+                        interaction,
+                        owner: interaction.client.application.owner,
+                        type: "error",
+                    },
+                    null,
+                    `Error handling chat input command autocomplete of chat input command '${interaction.commandName}'`,
+                );
             });
     },
 };

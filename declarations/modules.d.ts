@@ -52,6 +52,11 @@ interface Notifications {
     notificationType?: ("error" | "information" | "warning")[];
 
     /**
+     * Priority that is important enough to cause notifications being sent over Discord
+     */
+    priority?: number;
+
+    /**
      * Whether team members should receive notifications
      */
     teamNotifications?: boolean | TeamNotifications;

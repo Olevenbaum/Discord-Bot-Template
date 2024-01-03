@@ -5,7 +5,10 @@ import {
     MessageContextMenuCommandInteraction,
     UserContextMenuCommandInteraction,
 } from "discord.js";
-import { SavedInteractionType } from "../../../declarations/types";
+import {
+    PredefinedInteractionErrorResponse,
+    SavedInteractionType,
+} from "../../../declarations/types";
 
 /**
  * Application command interaction handler
@@ -32,16 +35,38 @@ export const applicationCommandInteraction: SavedInteractionType = {
             await applicationCommandType
                 .execute(interaction)
                 .catch((error: Error) => {
-                    // TODO: Better notification system
                     // Send notifications
-                    sendNotification("error", error);
+                    sendNotification(
+                        {
+                            content: `The application command type \`\`${interaction.commandType}\`\` could not be handled!`,
+                            error,
+                            interaction,
+                            owner: interaction.client.application.owner,
+                            type: "error",
+                        },
+                        {
+                            content:
+                                PredefinedInteractionErrorResponse.errorHandlingInteraction,
+                            interaction,
+                        },
+                        `Error handling interaction with application command type '${interaction.commandType}'`,
+                    );
                 });
         } else {
-            // TODO: Better notification system
             // Send notifications
             sendNotification(
-                "error",
-                `Unable to find application command type matching '${interaction.commandType}' in global variable`,
+                {
+                    content: `The file handling the application command type \`\`${interaction.commandType}\`\` does not exist!`,
+                    interaction,
+                    owner: interaction.client.application.owner,
+                    type: "error",
+                },
+                {
+                    content:
+                        PredefinedInteractionErrorResponse.errorHandlingInteraction,
+                    interaction,
+                },
+                `No file found for application command type '${interaction.commandType}'`,
             );
         }
     },

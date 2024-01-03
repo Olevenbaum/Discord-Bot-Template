@@ -1,6 +1,9 @@
 // Type imports
-import { Events, Interaction, InteractionType } from "discord.js";
-import { SavedEventType } from "../../declarations/types";
+import { Events, Interaction, InteractionType, userMention } from "discord.js";
+import {
+    PredefinedInteractionErrorResponse,
+    SavedEventType,
+} from "../../declarations/types";
 
 // Configuration data import
 import configuration from "configuration.json";
@@ -21,15 +24,28 @@ export const eventType: SavedEventType = {
                 blockedUsers.includes(interaction.user.id)) ||
                 (!configuration.enableBotInteraction && interaction.user.bot))
         ) {
-            // TODO: Better notification system
             // Send notifications
             sendNotification(
-                "warning",
-                `The ${
-                    (interaction.user.bot
-                        ? "bot"
-                        : "user, who is currently blocked from using your bot,") +
-                    interaction.user.username
+                {
+                    content: `The ${
+                        (interaction.user.bot
+                            ? "bot"
+                            : `user ${userMention(
+                                  interaction.user.id,
+                              )}, who currently is blocked from using your bot,`) +
+                        interaction.user.username
+                    } tried to interact with your bot`,
+                    owner: interaction.client.application.owner,
+                    type: "warning",
+                },
+                {
+                    content: PredefinedInteractionErrorResponse.cannotInteract,
+                    interaction,
+                },
+                `${
+                    interaction.user.bot
+                        ? "Bot"
+                        : `User '${interaction.user.username}', who currently is blocked from using your bot,`
                 } tried to interact with your bot`,
             );
         } else {
@@ -44,22 +60,38 @@ export const eventType: SavedEventType = {
                 await interactionType
                     .execute(interaction)
                     .catch((error: Error) => {
-                        // TODO: Better notification system
                         // Send notification
                         sendNotification(
-                            "error",
-                            error,
-                            `There was an error handling the interaction '${interaction.type}'!`,
-                            interaction,
-                            true,
+                            {
+                                content: `The interaction type \`\`${interaction.type}\`\` could not be handled!`,
+                                error,
+                                interaction,
+                                owner: interaction.client.application.owner,
+                                type: "error",
+                            },
+                            {
+                                content:
+                                    PredefinedInteractionErrorResponse.errorHandlingInteraction,
+                                interaction,
+                            },
+                            `Error handling interaction type '${interaction.type}'`,
                         );
                     });
             } else {
-                // TODO: Better notification system
                 // Send notification
                 sendNotification(
-                    "error",
-                    `Unable to find interaction type matching ${interaction.type} in global variable`,
+                    {
+                        content: `Unable to find interaction type matching ${interaction.type} in global variable`,
+                        interaction,
+                        owner: interaction.client.application.owner,
+                        type: "error",
+                    },
+                    {
+                        content:
+                            PredefinedInteractionErrorResponse.errorHandlingInteraction,
+                        interaction,
+                    },
+                    `Not file found for interaction type '${interaction.type}'`,
                 );
             }
         }
