@@ -36,6 +36,8 @@ import {
     UserContextMenuCommandInteraction,
     UserSelectMenuBuilder,
     UserSelectMenuInteraction,
+    ModalBuilder,
+    ModalSubmitInteraction,
 } from "discord.js";
 
 /**
@@ -139,6 +141,16 @@ interface MessageComponentCreateOptions extends ComponentCreateOptions {
 }
 
 /**
+ * Options that can be passed when creating a modal
+ */
+interface ModalCreateOptions {
+    /**
+     * The title of the modal
+     */
+    title?: string;
+}
+
+/**
  * Notification that is sent to the owner, the owner of the developer team or every team member of the developer team.
  */
 interface Notification {
@@ -165,7 +177,7 @@ interface Notification {
     /**
      * The owner of the bot application
      */
-    owner: User | Team;
+    owner?: User | Team;
 
     /**
      * Priority of the notification
@@ -466,9 +478,7 @@ interface SavedMessageComponent extends SavedComponent {
      *
      * @returns The message component builder modified by the options
      */
-    create(
-        options?: MessageComponentCreateOptions,
-    ): MessageComponentBuilder | ActionRowBuilder;
+    create(options?: MessageComponentCreateOptions): MessageComponentBuilder;
 
     /**
      * The **execute()** method handles the response to the message component interaction
@@ -493,6 +503,37 @@ interface SavedMessageComponentType {
      * @param interaction The interaction to response to
      */
     execute(interaction: MessageComponentInteraction): Promise<void>;
+}
+
+/**
+ * Modal imported from local file
+ */
+interface SavedModal {
+    /**
+     * Text input components that are included in the modal
+     */
+    includedTextInputComponents: { [key: string]: number };
+
+    /**
+     * Name of the modal
+     */
+    name: string;
+
+    /**
+     * The **create()** method creates the modal modified by the given options.
+     *
+     * @param options The options to modify the modal
+     *
+     * @returns The modal builder modified by the options
+     */
+    create(options: ModalCreateOptions): ModalBuilder;
+
+    /**
+     * The **execute()** method handles the response to the modal submit interaction
+     *
+     * @param interaction The modal submit interaction to response to
+     */
+    execute(interaction: ModalSubmitInteraction): Promise<void>;
 }
 
 /**

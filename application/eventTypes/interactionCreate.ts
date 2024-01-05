@@ -27,6 +27,11 @@ export const eventType: SavedEventType = {
             // Send notifications
             sendNotification(
                 {
+                    consoleOutput: `${
+                        interaction.user.bot
+                            ? "Bot"
+                            : `User '${interaction.user.username}', who currently is blocked from using your bot,`
+                    } tried to interact with your bot`,
                     content: `The ${
                         (interaction.user.bot
                             ? "bot"
@@ -42,11 +47,6 @@ export const eventType: SavedEventType = {
                     content: PredefinedInteractionErrorResponse.cannotInteract,
                     interaction,
                 },
-                `${
-                    interaction.user.bot
-                        ? "Bot"
-                        : `User '${interaction.user.username}', who currently is blocked from using your bot,`
-                } tried to interact with your bot`,
             );
         } else {
             /**
@@ -63,6 +63,7 @@ export const eventType: SavedEventType = {
                         // Send notification
                         sendNotification(
                             {
+                                consoleOutput: `Error handling interaction type '${interaction.type}'`,
                                 content: `The interaction type \`\`${interaction.type}\`\` could not be handled!`,
                                 error,
                                 interaction,
@@ -74,13 +75,13 @@ export const eventType: SavedEventType = {
                                     PredefinedInteractionErrorResponse.errorHandlingInteraction,
                                 interaction,
                             },
-                            `Error handling interaction type '${interaction.type}'`,
                         );
                     });
             } else {
                 // Send notification
                 sendNotification(
                     {
+                        consoleOutput: `No file found for interaction type '${interaction.type}'`,
                         content: `Unable to find interaction type matching ${interaction.type} in global variable`,
                         interaction,
                         owner: interaction.client.application.owner,
@@ -91,7 +92,6 @@ export const eventType: SavedEventType = {
                             PredefinedInteractionErrorResponse.errorHandlingInteraction,
                         interaction,
                     },
-                    `Not file found for interaction type '${interaction.type}'`,
                 );
             }
         }

@@ -55,7 +55,7 @@ export default async (client: Client) => {
                         .post(
                             Routes.applicationCommands(client.application.id),
                             {
-                                body: savedApplicationCommand,
+                                body: savedApplicationCommand.data.toJSON(),
                             },
                         )
                         .then(() => {
@@ -93,7 +93,7 @@ export default async (client: Client) => {
                                 registeredApplicationCommand.id,
                             ),
                             {
-                                body: savedApplicationCommand,
+                                body: savedApplicationCommand.data.toJSON(),
                             },
                         )
                         .then(() => {

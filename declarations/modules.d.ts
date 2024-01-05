@@ -1,8 +1,11 @@
+// Type imports
+import { Snowflake } from "discord.js";
+
 /**
  * Bot saved in the data of the configuration file
  */
 interface Application {
-    applicationId: string;
+    applicationId: Snowflake;
     publicKey: string;
     token: string;
 }

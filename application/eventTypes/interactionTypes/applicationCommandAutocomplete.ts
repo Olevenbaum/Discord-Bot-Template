@@ -34,6 +34,7 @@ export const chatInputCommandAutocompleteInteraction: SavedInteractionType = {
                 // Send notifications
                 sendNotification(
                     {
+                        consoleOutput: `Error handling chat input command autocomplete of chat input command '${interaction.commandName}'`,
                         content: `There was an error handling the autocomplete interaction of the chat input command \`\`${interaction.commandName}\`\`!`,
                         error,
                         interaction,
@@ -41,7 +42,6 @@ export const chatInputCommandAutocompleteInteraction: SavedInteractionType = {
                         type: "error",
                     },
                     null,
-                    `Error handling chat input command autocomplete of chat input command '${interaction.commandName}'`,
                 );
             });
     },

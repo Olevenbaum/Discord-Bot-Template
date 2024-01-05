@@ -15,6 +15,7 @@ import {
     SavedComponent,
     SavedInteractionType,
     SavedMessageComponentType,
+    SavedModal,
 } from "./types";
 
 declare global {
@@ -42,7 +43,7 @@ declare global {
     const interactionTypes: Collection<InteractionType, SavedInteractionType>;
 
     /**
-     * Collection of all message components imported from local files
+     * Collection of all components imported from local files
      */
     const components: Collection<string, SavedComponent>;
 
@@ -53,6 +54,11 @@ declare global {
         MessageComponentType,
         SavedMessageComponentType
     >;
+
+    /**
+     * Collection of all modals imported from local files
+     */
+    const modals: Collection<string, SavedModal>;
 
     /**
      * The **compareApplicationCommands()** function compares a registered application command linked and saved to the

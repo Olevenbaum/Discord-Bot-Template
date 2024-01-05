@@ -23,10 +23,7 @@ export const actionRow: SavedActionRow = {
         /**
          * Message components or text input components to add to the action row
          */
-        const createdComponents: (
-            | Exclude<MessageComponentBuilder, TextInputBuilder>
-            | TextInputBuilder
-        )[] = [];
+        const createdComponents: MessageComponentBuilder[] = [];
 
         // Iterate over included components
         for (const componentName in this.includedComponents) {
@@ -35,7 +32,7 @@ export const actionRow: SavedActionRow = {
              */
             const component = components.get(
                 componentName + `(${this.type})`,
-            ) as SavedMessageComponent | SavedTextInputComponent;
+            ) as SavedMessageComponent;
 
             // Iterate over number of single component
             for (
@@ -43,8 +40,11 @@ export const actionRow: SavedActionRow = {
                 counter < this.includedComponents[componentName];
                 counter++
             ) {
-                // Set index of component
-                options[componentName].customIdIndex = counter;
+                // Check if custom ID index is needed
+                if (this.includedComponents[componentName] > 1) {
+                    // Set index of component
+                    options[componentName].customIdIndex = counter;
+                }
 
                 // Add message component to array
                 createdComponents.push(

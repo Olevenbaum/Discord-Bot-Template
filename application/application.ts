@@ -143,7 +143,7 @@ if (Array.isArray(configuration.applications)) {
                             // Send notifications
                             sendNotification({
                                 content:
-                                    "Something went wrong trying to log in you bot",
+                                    "Something went wrong trying to log in your bot",
                                 error,
                                 owner: client.application.owner,
                                 type: "error",
@@ -168,7 +168,7 @@ if (Array.isArray(configuration.applications)) {
         .catch((error: Error) => {
             // Send notifications
             sendNotification({
-                content: "Something went wrong trying to log in you bot",
+                content: "Something went wrong trying to log in your bot",
                 error,
                 owner: client.application.owner,
                 type: "error",
@@ -179,7 +179,7 @@ if (Array.isArray(configuration.applications)) {
     client.login(configuration.applications.token).catch((error: Error) => {
         // Send notifications
         sendNotification({
-            content: "Something went wrong trying to log in you bot",
+            content: "Something went wrong trying to log in your bot",
             error,
             owner: client.application.owner,
             type: "error",

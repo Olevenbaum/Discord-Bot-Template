@@ -18,14 +18,14 @@ export const eventType: SavedEventType = {
             // Send notifications
             sendNotification(
                 {
-                    type: "information",
+                    consoleOutput: `Successfully logged in bot at Discord with username '${client.user.username}'`,
                     content: `Your bot ${userMention(
                         client.user.id,
                     )} is online now!`,
                     owner: client.application.owner,
+                    type: "information",
                 },
                 null,
-                `Successfully logged in bot at Discord with username '${client.user.username}'`,
             );
         }
     },

@@ -7,8 +7,10 @@ import { Client } from "discord.js";
 import {
     SavedApplicationCommand,
     SavedApplicationCommandType,
+    SavedComponent,
     SavedInteractionType,
     SavedMessageComponentType,
+    SavedModal,
 } from "../declarations/types";
 
 // Configuration data import
@@ -180,7 +182,7 @@ export default (client: Client) => {
 
         // Add application command to its collection
         applicationCommands.set(
-            applicationCommand.data.name,
+            applicationCommand.data.name + `(${applicationCommand.type})`,
             applicationCommand,
         );
     });
@@ -213,10 +215,38 @@ export default (client: Client) => {
         /**
          * Component imported from local file
          */
-        const component = require(path.join(componentsPath, componentFileName));
+        const component: SavedComponent = require(
+            path.join(componentsPath, componentFileName),
+        );
 
         // Add component to its collection
-        components.set(component.name, component);
+        components.set(component.name + `(${component.type})`, component);
+    });
+
+    /**
+     * Path of modals imported from local files
+     */
+    const modalsPath = path.join(__dirname, "../resources/modals");
+
+    /**
+     * Modal file names of modals imported from local file
+     */
+    const modalFileNames = fs
+        .readdirSync(modalsPath)
+        .filter(
+            (modalFileName) =>
+                modalFileName.endsWith(".ts") || modalFileName.endsWith(".js"),
+        );
+
+    // Iterate over modal file names
+    modalFileNames.forEach((modalFileName) => {
+        /**
+         * Modal imported from local file
+         */
+        const modal: SavedModal = require(path.join(modalsPath, modalFileName));
+
+        // Add modal to its collection
+        modals.set(modal.name, modal);
     });
 
     // Check if blocked users are enabled

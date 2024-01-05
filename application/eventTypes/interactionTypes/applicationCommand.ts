@@ -38,6 +38,7 @@ export const applicationCommandInteraction: SavedInteractionType = {
                     // Send notifications
                     sendNotification(
                         {
+                            consoleOutput: `Error handling interaction with application command type '${interaction.commandType}'`,
                             content: `The application command type \`\`${interaction.commandType}\`\` could not be handled!`,
                             error,
                             interaction,
@@ -49,13 +50,13 @@ export const applicationCommandInteraction: SavedInteractionType = {
                                 PredefinedInteractionErrorResponse.errorHandlingInteraction,
                             interaction,
                         },
-                        `Error handling interaction with application command type '${interaction.commandType}'`,
                     );
                 });
         } else {
             // Send notifications
             sendNotification(
                 {
+                    consoleOutput: `No file found for application command type '${interaction.commandType}'`,
                     content: `The file handling the application command type \`\`${interaction.commandType}\`\` does not exist!`,
                     interaction,
                     owner: interaction.client.application.owner,
@@ -66,7 +67,6 @@ export const applicationCommandInteraction: SavedInteractionType = {
                         PredefinedInteractionErrorResponse.errorHandlingInteraction,
                     interaction,
                 },
-                `No file found for application command type '${interaction.commandType}'`,
             );
         }
     },
