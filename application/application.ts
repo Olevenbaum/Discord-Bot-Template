@@ -101,7 +101,7 @@ if (Array.isArray(configuration.applications)) {
     /**
      * Tokens of provided bots
      */
-    const tokens = configuration.applications.map(({ token }) => token);
+    const tokens = configuration.applications.map((application) => application.token);
 
     // Check if argument for different token was provided
     if (argumentIndex !== -1) {

@@ -2,7 +2,9 @@
 .idea
 .vscode
 
-
 node_modules
+
+*.js
+*.js.map
 
 configuration.json

@@ -4,14 +4,10 @@ import { join } from "node:path";
 
 // Type imports
 import {
-    Application,
-    DiscordAPIError,
-    OAuthErrorData,
     REST,
     RESTPostAPIChatInputApplicationCommandsJSONBody,
     RESTPostAPIContextMenuApplicationCommandsJSONBody,
     Routes,
-    Snowflake,
 } from "discord.js";
 import { SavedApplicationCommand } from "../declarations/types";
 
@@ -70,12 +66,7 @@ if (Array.isArray(configuration.applications)) {
     /**
      * Provided bots
      */
-    const applications = configuration.applications.map((application) => {
-        return {
-            applicationId: application.applicationId,
-            token: application.token,
-        };
-    });
+    const applications = configuration.applications;
 
     // Check if argument for different bot was provided
     if (argumentIndex !== -1) {

@@ -25,7 +25,7 @@ export const chatInputCommandAutocompleteInteraction: SavedInteractionType = {
                     applicationCommand.type ===
                     ApplicationCommandType.ChatInput,
             )
-            .get(interaction.commandName) as SavedChatInputCommand; // TODO: Fix type
+            .get(interaction.commandName) as SavedChatInputCommand;
 
         // Try to forward chat input command autocomplete interaction response prompt
         await chatInputCommand

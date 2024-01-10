@@ -116,7 +116,7 @@ interface InteractionErrorResponse {
     /**
      * The interaction that caused the error
      */
-    interaction: Interaction;
+    interaction: Interaction | MessageComponentInteraction;
 }
 
 /**

@@ -22,7 +22,7 @@ export default async (client: Client) => {
      */
     const rawRegisteredApplicationCommands = (await client.rest.get(
         Routes.applicationCommands(client.application.id),
-    )) as ApplicationCommand[]; // TODO: Fix type
+    )) as ApplicationCommand[];
 
     // Iterate over requested registered application commands
     rawRegisteredApplicationCommands.forEach(
